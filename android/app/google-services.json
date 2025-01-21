@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "630129691587",
+    "project_id": "frekantin",
+    "storage_bucket": "frekantin.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:630129691587:android:75ad5ecae1df96619ccb76",
+        "android_client_info": {
+          "package_name": "com.example.adminfrekantin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBE1lPDmN1odwgQvyL1fMv8kcarlQu2jX8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:630129691587:android:5c0abaa2edb719bd9ccb76",
+        "android_client_info": {
+          "package_name": "com.example.e_kantin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBE1lPDmN1odwgQvyL1fMv8kcarlQu2jX8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:630129691587:android:0d1e5d63c4c853d09ccb76",
+        "android_client_info": {
+          "package_name": "com.example.sellerfrekantin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBE1lPDmN1odwgQvyL1fMv8kcarlQu2jX8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
