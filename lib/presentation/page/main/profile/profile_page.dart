@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../bloc/auth/auth_bloc.dart';
 import '../../../bloc/auth/auth_event.dart';
 import '../../../bloc/auth/auth_state.dart';
+import '../../../bloc/user/user_bloc.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
@@ -15,7 +16,17 @@ class ProfilePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: Icon(
+              Icons.arrow_back,
+              size: 28.sp,
+              color: AppColors.primary,
+            )),
         backgroundColor: AppColors.white,
+        centerTitle: false,
         title: Text(
           'Profilku',
           style: TextStyle(
@@ -31,37 +42,56 @@ class ProfilePage extends StatelessWidget {
           children: [
             Row(
               children: [
-                CircleAvatar(
-                  radius: 30.sp,
-                  child: Image.asset('assets/images/img_profil.png'),
-                ),
-                SizedBox(
-                  width: 12.sp,
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Fremas',
-                      style: TextStyle(
-                        fontSize: 20.sp,
-                        fontFamily: 'SemiBold',
-                      ),
-                    ),
-                    Text(
-                      'fremasadi@gmail.com',
-                      style: TextStyle(
-                        fontSize: 12.sp,
-                      ),
-                    )
-                  ],
-                ),
-                const Spacer(),
-                Image.asset(
-                  'assets/icons/ic_editprofile.png',
-                  color: Colors.black54,
-                  width: 25.w,
-                  height: 25.h,
+                BlocBuilder<UserBloc, UserState>(
+                  builder: (context, state) {
+                    if (state is UserLoading) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else if (state is UserLoaded) {
+                      final user = state.user;
+                      return Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 30.sp,
+                            backgroundImage: NetworkImage(
+                              user.image, // Pastikan URL benar
+                            ),
+                          ),
+                          SizedBox(
+                            width: 12.sp,
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                user.name,
+                                style: TextStyle(
+                                  fontSize: 20.sp,
+                                  fontFamily: 'SemiBold',
+                                ),
+                              ),
+                              Text(
+                                user.email,
+                                style: TextStyle(
+                                  fontSize: 12.sp,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      );
+                    } else if (state is UserError) {
+                      return Center(
+                        child: Text(
+                          'Error: ${state.message}',
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                      );
+                    } else {
+                      return const SizedBox();
+                    }
+                  },
                 )
               ],
             ),
@@ -102,7 +132,7 @@ class ProfilePage extends StatelessWidget {
                       context.read<AuthBloc>().add(LogoutRequested());
                     },
                     child: Text(
-                      'Logou',
+                      'Logout',
                       style: TextStyle(
                         fontSize: 12.sp,
                         fontFamily: 'SemiBold',

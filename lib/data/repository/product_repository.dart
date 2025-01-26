@@ -39,9 +39,7 @@ class ProductRepository {
         throw Exception(
             'HTTP request failed with status: ${response.statusCode}');
       }
-    } catch (e, stackTrace) {
-      print('Error: $e');
-      print('StackTrace: $stackTrace');
+    } catch (e) {
       throw Exception('Error fetching products: $e');
     }
   }

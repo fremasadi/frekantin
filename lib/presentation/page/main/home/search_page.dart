@@ -63,7 +63,8 @@ class _SearchPageState extends State<SearchPage> {
                     color: AppColors.white,
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
+                        color: Colors.grey
+                            .withAlpha((255 * 0.2).toInt()), // Menghitung alpha
                         spreadRadius: 2,
                         blurRadius: 4,
                         offset: const Offset(0, 2),
@@ -194,7 +195,7 @@ class _SearchPageState extends State<SearchPage> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      '${product.name}, ${product.seller.name}',
+                                      '${product.name}, ${product.seller!.name}',
                                       style: TextStyle(
                                         fontSize: 14.0.sp,
                                         fontWeight: FontWeight.bold,

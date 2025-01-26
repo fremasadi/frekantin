@@ -13,7 +13,7 @@ class Product {
   final int stock;
   final DateTime createdAt;
   final DateTime updatedAt;
-  final Seller seller;
+  final Seller? seller; // Ubah menjadi nullable
   final Category category;
 
   Product({
@@ -27,7 +27,7 @@ class Product {
     required this.stock,
     required this.createdAt,
     required this.updatedAt,
-    required this.seller,
+    this.seller, // Tidak wajib
     required this.category,
   });
 
@@ -43,7 +43,9 @@ class Product {
       stock: json['stock'],
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
-      seller: Seller.fromJson(json['seller']),
+      seller: json['seller'] != null
+          ? Seller.fromJson(json['seller'])
+          : null, // Periksa null
       category: Category.fromJson(json['category']),
     );
   }

@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../core/constant/colors.dart';
-import '../../../core/util/price_converter.dart';
 import '../../../data/models/product.dart';
 import '../../bloc/review/review_bloc.dart';
 
@@ -98,7 +97,7 @@ class _ProductCardState extends State<ProductCard> {
                 ),
                 SizedBox(height: 4.h),
                 Text(
-                  '${widget.product.name} - ${widget.product.seller.name}',
+                  '${widget.product.name} - ${widget.product.seller!.name}',
                   style: TextStyle(
                     fontSize: 14.sp,
                     color: AppColors.black,

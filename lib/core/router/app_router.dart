@@ -5,7 +5,7 @@ import 'package:e_kantin/presentation/page/main/history/history_page.dart';
 import 'package:e_kantin/presentation/page/main/home/home_page.dart';
 import 'package:e_kantin/presentation/page/main/home/search_page.dart';
 import 'package:e_kantin/presentation/page/main/profile/profile_page.dart';
-import 'package:e_kantin/presentation/page/payment/selectpayment_page.dart';
+import 'package:e_kantin/presentation/page/order/selectpayment_page.dart';
 import 'package:e_kantin/presentation/page/splash/splash_loading.dart';
 import 'package:e_kantin/presentation/page/splash/splash_page.dart';
 import 'package:flutter/material.dart';

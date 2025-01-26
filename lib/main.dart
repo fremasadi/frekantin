@@ -1,16 +1,21 @@
+import 'dart:io';
+
 import 'package:e_kantin/core/constant/colors.dart';
 import 'package:e_kantin/data/repository/auth_repository.dart';
 import 'package:e_kantin/data/repository/category_repository.dart';
+import 'package:e_kantin/data/repository/order_repository.dart';
 import 'package:e_kantin/data/repository/user_repository.dart';
 import 'package:e_kantin/presentation/bloc/auth/auth_state.dart';
 import 'package:e_kantin/presentation/bloc/cart/cart_bloc.dart';
 import 'package:e_kantin/presentation/bloc/cart/cart_event.dart';
 import 'package:e_kantin/presentation/bloc/category/category_bloc.dart';
 import 'package:e_kantin/presentation/bloc/category/category_state.dart';
+import 'package:e_kantin/presentation/bloc/order/order_bloc.dart';
 import 'package:e_kantin/presentation/bloc/product/product_bloc.dart';
-import 'package:e_kantin/presentation/bloc/productbycategory/ProductByCategoryBloc.dart';
+import 'package:e_kantin/presentation/bloc/productbycategory/product_by_category.dart';
 import 'package:e_kantin/presentation/bloc/search_product/search_product_bloc.dart';
 import 'package:e_kantin/presentation/bloc/user/user_bloc.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -22,6 +27,21 @@ import 'presentation/bloc/auth/auth_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  FirebaseOptions firebaseOptions = Platform.isIOS
+      ? const FirebaseOptions(
+          apiKey: 'AIzaSyDs1BXE6XgW7RaCwLx9jrSnfuAmnlQSZ3I',
+          appId: '1:1043350175679:ios:eda4a92cb5b984c34fab0a',
+          messagingSenderId: '',
+          projectId: 'fre-kantin',
+        )
+      : const FirebaseOptions(
+          apiKey: 'AIzaSyCNjnbWpe0UZ6ykxAz0mTVjctZwO2T-WjA',
+          appId: '1:1043350175679:android:595d191fc9ca134b4fab0a',
+          messagingSenderId: '',
+          projectId: 'fre-kantin',
+        );
+
+  await Firebase.initializeApp(options: firebaseOptions);
 
   // Inisialisasi repositories
   final authRepository = AuthRepository();
@@ -89,6 +109,10 @@ class MyApp extends StatelessWidget {
             BlocProvider(
               create: (context) =>
                   SearchProductBloc(productRepository: ProductRepository()),
+            ),
+            BlocProvider(
+              create: (context) =>
+                  OrderBloc(orderRepository: OrderRepository()),
             ),
           ],
           child: BlocListener<AuthBloc, AuthState>(

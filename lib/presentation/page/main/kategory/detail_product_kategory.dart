@@ -7,7 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shimmer/shimmer.dart';
 
 import '../../../../data/repository/review_repository.dart';
-import '../../../bloc/productbycategory/ProductByCategoryBloc.dart';
+import '../../../bloc/productbycategory/product_by_category.dart';
 import '../../../bloc/review/review_bloc.dart';
 import '../produk/detail_produk_page.dart';
 
@@ -50,7 +50,6 @@ class _DetailProductKategoryState extends State<DetailProductKategory> {
           },
           child: Column(
             children: [
-              SizedBox(height: 8.h),
               Container(
                 padding: const EdgeInsets.all(16.0),
                 decoration: BoxDecoration(
@@ -58,7 +57,8 @@ class _DetailProductKategoryState extends State<DetailProductKategory> {
                   boxShadow: _isScrolling
                       ? [
                           BoxShadow(
-                            color: Colors.grey.withOpacity(0.3),
+                            color: Colors.grey.withAlpha(
+                                (255 * 0.2).toInt()), // Menghitung alpha
                             spreadRadius: 0,
                             blurRadius: 6,
                             offset: const Offset(0, 4),
@@ -76,7 +76,7 @@ class _DetailProductKategoryState extends State<DetailProductKategory> {
                             onTap: () {
                               Navigator.pop(context);
                             },
-                            child: Icon(Icons.arrow_back, size: 22.sp),
+                            child: Icon(Icons.arrow_back, size: 28.sp),
                           ),
                           SizedBox(width: 16.w),
                           Column(
@@ -212,7 +212,7 @@ class _DetailProductKategoryState extends State<DetailProductKategory> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          '${product.name}, ${product.seller.name}',
+                                          '${product.name}, ${product.seller!.name}',
                                           style: TextStyle(
                                             fontSize: 14.0.sp,
                                             fontWeight: FontWeight.bold,
@@ -229,15 +229,15 @@ class _DetailProductKategoryState extends State<DetailProductKategory> {
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                         SizedBox(height: 4.0.h),
-                                        // Text(
-                                        //   'Rp.${product.price}',
-                                        //   style: const TextStyle(
-                                        //     fontSize: 14.0,
-                                        //     fontWeight: FontWeight.bold,
-                                        //     color: Colors.green,
-                                        //   ),
-                                        // ),
-                                        // SizedBox(height: 4.0.h),
+                                        Text(
+                                          'Rp.${product.price}',
+                                          style: const TextStyle(
+                                            fontSize: 14.0,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.green,
+                                          ),
+                                        ),
+                                        SizedBox(height: 4.0.h),
                                         GestureDetector(
                                           onTap: () {
                                             showModalBottomSheet(
@@ -385,7 +385,7 @@ class _DetailProductKategoryState extends State<DetailProductKategory> {
         return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
             return Container(
-              padding: EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(16.0),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -393,13 +393,16 @@ class _DetailProductKategoryState extends State<DetailProductKategory> {
                   Text(
                     "Rentang harga",
                     style: TextStyle(
-                      fontSize: 18.0,
+                      fontSize: 16.0.sp,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 16.0),
+                  SizedBox(height: 16.0.h),
                   CheckboxListTile(
-                    title: Text("\$\$\$\$ Di bawah Rp16.000"),
+                    title: Text(
+                      "Di bawah Rp16.000",
+                      style: TextStyle(fontSize: 14.sp),
+                    ),
                     value: isFirstChecked,
                     onChanged: (value) {
                       setState(() {
@@ -409,7 +412,10 @@ class _DetailProductKategoryState extends State<DetailProductKategory> {
                     activeColor: AppColors.primary,
                   ),
                   CheckboxListTile(
-                    title: Text("\$\$\$\$ Rp16.000 sampai Rp40.000"),
+                    title: Text(
+                      "Rp16.000 sampai Rp40.000",
+                      style: TextStyle(fontSize: 14.sp),
+                    ),
                     value: isSecondChecked,
                     onChanged: (value) {
                       setState(() {
@@ -419,7 +425,10 @@ class _DetailProductKategoryState extends State<DetailProductKategory> {
                     activeColor: AppColors.primary,
                   ),
                   CheckboxListTile(
-                    title: Text("\$\$\$\$ Rp40.000 sampai Rp100.000"),
+                    title: Text(
+                      "Rp40.000 sampai Rp100.000",
+                      style: TextStyle(fontSize: 14.sp),
+                    ),
                     value: isThirdChecked,
                     onChanged: (value) {
                       setState(() {
@@ -429,7 +438,10 @@ class _DetailProductKategoryState extends State<DetailProductKategory> {
                     activeColor: AppColors.primary,
                   ),
                   CheckboxListTile(
-                    title: Text("\$\$\$\$ Di atas Rp100.000"),
+                    title: Text(
+                      "Di atas Rp100.000",
+                      style: TextStyle(fontSize: 14.sp),
+                    ),
                     value: isFourthChecked,
                     onChanged: (value) {
                       setState(() {
@@ -438,7 +450,7 @@ class _DetailProductKategoryState extends State<DetailProductKategory> {
                     },
                     activeColor: AppColors.primary,
                   ),
-                  SizedBox(height: 16.0),
+                  SizedBox(height: 16.0.h),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -451,9 +463,12 @@ class _DetailProductKategoryState extends State<DetailProductKategory> {
                             isFourthChecked = false;
                           });
                         },
-                        child: Text("Hapus filter"),
+                        child: Text(
+                          "Hapus filter",
+                          style: TextStyle(fontSize: 14.sp, color: Colors.red),
+                        ),
                       ),
-                      SizedBox(width: 8.0),
+                      SizedBox(width: 8.0.w),
                       ElevatedButton(
                         onPressed: () {
                           // Pasang filter
@@ -461,7 +476,13 @@ class _DetailProductKategoryState extends State<DetailProductKategory> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: AppColors.primary,
                         ),
-                        child: Text("Pasang"),
+                        child: Text(
+                          "Pasang",
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            color: AppColors.white,
+                          ),
+                        ),
                       ),
                     ],
                   ),

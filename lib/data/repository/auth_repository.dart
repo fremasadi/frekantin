@@ -100,9 +100,6 @@ class AuthRepository {
       body: jsonEncode(body),
     );
 
-    print('Request Body: $body');
-    print('Response: ${response.body}');
-
     if (response.statusCode != 200) {
       throw Exception('Failed to reset password: ${response.body}');
     }

@@ -21,9 +21,12 @@ class _SplashScreenLoadingState extends State<SplashScreenLoading> {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('auth_token');
 
+    // Periksa apakah widget masih mounted sebelum melakukan navigasi
+    if (!mounted) return;
+
     if (token != null) {
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => BasePage()),
+        MaterialPageRoute(builder: (context) => const BasePage()),
       );
     } else {
       Navigator.of(context).pushReplacement(

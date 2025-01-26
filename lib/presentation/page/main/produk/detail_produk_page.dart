@@ -41,7 +41,7 @@ class DetailProdukPage extends StatelessWidget {
                 ),
               ),
               Text(
-                product.seller.name,
+                product.seller!.name,
                 style: TextStyle(
                   fontSize: 12.sp,
                   fontWeight: FontWeight.bold,

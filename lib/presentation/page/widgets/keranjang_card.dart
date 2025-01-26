@@ -13,6 +13,7 @@ class KeranjangCard extends StatefulWidget {
   final int initialQuantity; // Ganti quantity menjadi initialQuantity
   final VoidCallback onAdd;
   final VoidCallback onRemove;
+  final VoidCallback onDelete;
 
   const KeranjangCard({
     super.key,
@@ -23,6 +24,7 @@ class KeranjangCard extends StatefulWidget {
     required this.onAdd,
     required this.onRemove,
     required this.productId,
+    required this.onDelete,
   });
 
   @override
@@ -111,7 +113,6 @@ class _KeranjangCardState extends State<KeranjangCard> {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 8),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -123,6 +124,14 @@ class _KeranjangCardState extends State<KeranjangCard> {
                                     fontWeight: FontWeight.bold,
                                   ),
                         ),
+                        GestureDetector(
+                          onTap: widget.onDelete,
+                          child: Image.asset(
+                            'assets/icons/delete.png',
+                            width: 25.w,
+                            height: 25.h,
+                          ),
+                        )
                       ],
                     ),
                     SizedBox(

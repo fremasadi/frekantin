@@ -15,10 +15,19 @@ class KategoryPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+            onPressed: () {
+              Navigator.pop(context);
+            },
+            icon: Icon(
+              Icons.arrow_back,
+              size: 28.sp,
+            )),
         backgroundColor: AppColors.white,
+        centerTitle: false,
         title: Text(
           'Aneka Kuliner',
-          style: TextStyle(fontSize: 16.sp, fontFamily: 'SemiBold'),
+          style: TextStyle(fontSize: 14.sp, fontFamily: 'SemiBold'),
         ),
       ),
       body: GridView.builder(

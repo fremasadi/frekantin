@@ -279,14 +279,16 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  //appbar item
   Widget _buildWelcomeText(String greting) {
     return Positioned(
-      top: MediaQuery.of(context).size.width * .1 + 5,
+      top: ScreenUtil().screenWidth * .1 + 5,
       left: 10,
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 4.5.sp, horizontal: 12.sp),
         decoration: BoxDecoration(
-          color: AppColors.black.withOpacity(0.24),
+          color: AppColors.black
+              .withAlpha((255 * 0.2).toInt()), // Menghitung alpha
           borderRadius: BorderRadius.circular(16.sp),
         ),
         child: Column(
@@ -303,10 +305,10 @@ class _HomePageState extends State<HomePage> {
             BlocBuilder<UserBloc, UserState>(
               builder: (context, state) {
                 if (state is UserLoading) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Text('');
                 } else if (state is UserLoaded) {
                   return Text(
-                    state.user.name, // Mengambil nama dari user yang dimuat
+                    state.user.name,
                     style: TextStyle(
                       fontSize: 14.sp,
                       color: AppColors.white,
@@ -323,7 +325,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                   );
                 }
-                return SizedBox(); // Return an empty box if initial state
+                return const SizedBox(); // Return an empty box if initial state
               },
             )
           ],
@@ -378,7 +380,8 @@ class _HomePageState extends State<HomePage> {
               padding:
                   EdgeInsets.symmetric(vertical: 4.5.sp, horizontal: 12.sp),
               decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.3),
+                color: AppColors.primary
+                    .withAlpha((255 * 0.2).toInt()), // Menghitung alpha
                 borderRadius: BorderRadius.circular(16.sp),
               ),
               child: Text(

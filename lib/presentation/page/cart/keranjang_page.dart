@@ -1,13 +1,15 @@
 import 'package:e_kantin/core/constant/colors.dart';
-import 'package:e_kantin/presentation/page/payment/payment_page.dart';
+import 'package:e_kantin/presentation/page/order/order_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
+import '../../../data/repository/order_repository.dart';
 import '../../bloc/cart/cart_bloc.dart';
 import '../../bloc/cart/cart_event.dart';
 import '../../bloc/cart/cart_state.dart';
+import '../../bloc/order/order_bloc.dart';
 import '../widgets/keranjang_card.dart';
 
 class KeranjangPage extends StatelessWidget {
@@ -107,7 +109,8 @@ class KeranjangPage extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8.0),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.black.withOpacity(0.2),
+                              color: Colors.black.withAlpha(
+                                  (255 * 0.2).toInt()), // Menghitung alpha
                               blurRadius: 1.0,
                               spreadRadius: 0.0,
                               offset: const Offset(0, 2),
@@ -151,10 +154,22 @@ class KeranjangPage extends StatelessWidget {
                           itemBuilder: (context, index) {
                             final item = cartItems[index];
 
-                            return Dismissible(
-                              key: Key(item.id.toString()),
-                              direction: DismissDirection.endToStart,
-                              onDismissed: (direction) {
+                            return KeranjangCard(
+                              imageUrl: item.product?.image ?? '',
+                              title: item.product?.name ??
+                                  'Produk Tidak Diketahui',
+                              price: item.product?.price ?? 0.0,
+                              initialQuantity: item.quantity,
+                              onAdd: () {
+                                context.read<CartBloc>().add(
+                                    UpdateCartItem(item.id, item.quantity + 1));
+                              },
+                              onRemove: () {
+                                context.read<CartBloc>().add(
+                                    UpdateCartItem(item.id, item.quantity - 1));
+                              },
+                              productId: item.id,
+                              onDelete: () {
                                 context
                                     .read<CartBloc>()
                                     .add(RemoveCartItem(item.id));
@@ -165,32 +180,6 @@ class KeranjangPage extends StatelessWidget {
                                   ),
                                 );
                               },
-                              background: Container(
-                                color: Colors.red,
-                                alignment: Alignment.centerRight,
-                                padding: EdgeInsets.only(right: 20.sp),
-                                child: Icon(
-                                  Icons.delete,
-                                  color: Colors.white,
-                                  size: 22.sp,
-                                ),
-                              ),
-                              child: KeranjangCard(
-                                imageUrl: item.product?.image ?? '',
-                                title: item.product?.name ??
-                                    'Produk Tidak Diketahui',
-                                price: item.product?.price ?? 0.0,
-                                initialQuantity: item.quantity,
-                                onAdd: () {
-                                  context.read<CartBloc>().add(UpdateCartItem(
-                                      item.id, item.quantity + 1));
-                                },
-                                onRemove: () {
-                                  context.read<CartBloc>().add(UpdateCartItem(
-                                      item.id, item.quantity - 1));
-                                },
-                                productId: item.id,
-                              ),
                             );
                           },
                         ),
@@ -277,8 +266,11 @@ class KeranjangPage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => PaymentPage(
-                              tableNumber: _tableNumberController.text,
+                            builder: (context) => BlocProvider(
+                              create: (context) =>
+                                  OrderBloc(orderRepository: OrderRepository()),
+                              child: OrderPage(
+                                  tableNumber: _tableNumberController.text),
                             ),
                           ),
                         );

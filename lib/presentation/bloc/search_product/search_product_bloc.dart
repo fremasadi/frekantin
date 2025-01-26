@@ -19,8 +19,6 @@ class SearchProductBloc extends Bloc<SearchProductEvent, SearchProductState> {
       }
     });
     on<ClearSearchResults>((event, emit) {
-      print("ClearSearchResults event diproses");
-
       emit(SearchProductInitial());
     });
   }

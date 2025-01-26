@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
 import '../../../core/constant/colors.dart';
 
 class SelectpaymentPage extends StatefulWidget {
@@ -14,26 +13,10 @@ class _SelectpaymentPageState extends State<SelectpaymentPage> {
   String _selectedPayment = '';
 
   final List<Map<String, String>> paymentMethods = [
-    {
-      'icon': 'assets/icons/ic_bca.png',
-      'text': 'Bank BCA',
-    },
-    {
-      'icon': 'assets/icons/ic_bri.png',
-      'text': 'Bank BRI',
-    },
-    {
-      'icon': 'assets/icons/ic_bni.png',
-      'text': 'Bank BNI',
-    },
-    {
-      'icon': 'assets/icons/ic_mandiri.png',
-      'text': 'Bank Mandiri',
-    },
-    {
-      'icon': 'assets/icons/ic_dana.png',
-      'text': 'E-Wallet Dana',
-    },
+    {'icon': 'assets/icons/ic_bca.png', 'text': 'bca'},
+    {'icon': 'assets/icons/ic_bri.png', 'text': 'bri'},
+    {'icon': 'assets/icons/ic_bni.png', 'text': 'bni'},
+    {'icon': 'assets/icons/ic_mandiri.png', 'text': 'mandiri'},
   ];
 
   @override
@@ -79,8 +62,8 @@ class _SelectpaymentPageState extends State<SelectpaymentPage> {
                           Icons.check,
                           color: Colors.green,
                           size: 22.sp,
-                        ) // Menampilkan ikon centang jika dipilih
-                      : null, // Tidak menampilkan apa-apa jika tidak dipilih
+                        )
+                      : null,
                   onTap: () {
                     setState(() {
                       _selectedPayment = method['text']!;
@@ -101,7 +84,8 @@ class _SelectpaymentPageState extends State<SelectpaymentPage> {
               ),
               child: TextButton(
                 onPressed: () {
-                  Navigator.pop(context, _selectedPayment);
+                  Navigator.pop(context,
+                      _selectedPayment); // Mengembalikan pilihan ke halaman sebelumnya
                 },
                 child: Text(
                   'Konfirmasi',
