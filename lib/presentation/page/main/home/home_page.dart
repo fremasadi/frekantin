@@ -207,68 +207,71 @@ class _HomePageState extends State<HomePage> {
       surfaceTintColor: AppColors.white,
       pinned: true,
       flexibleSpace: FlexibleSpaceBar(
-        background: Stack(
+        background: Column(
           children: [
-            SizedBox(
-              height: 230.h,
-              child: PageView.builder(
-                controller: _pageController,
-                itemCount: 3,
-                itemBuilder: (context, index) {
-                  return Image.asset(
-                    'assets/images/img_slider.jpg',
-                    height: 285.h,
-                    width: MediaQuery.of(context).size.width,
-                    fit: BoxFit.fill,
-                  );
-                },
+            Expanded(
+              child: Stack(
+                children: [
+                  PageView.builder(
+                    controller: _pageController,
+                    itemCount: 3,
+                    itemBuilder: (context, index) {
+                      return Image.asset(
+                        'assets/images/img_slider.jpg',
+                        width: MediaQuery.of(context).size.width,
+                        fit: BoxFit.fill,
+                      );
+                    },
+                  ),
+                  _buildWelcomeText(getGreting()),
+                  Positioned(
+                      top: MediaQuery.of(context).size.width * .1 + 5,
+                      right: 10.sp,
+                      child: Row(
+                        children: [
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(context, AppRouter.history);
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: AppColors.white1,
+                                shape: BoxShape.circle,
+                              ),
+                              padding: EdgeInsets.all(8.sp),
+                              child: Image.asset(
+                                'assets/icons/history.png',
+                                width: 25.w,
+                                height: 25.h,
+                              ),
+                            ),
+                          ),
+                          SizedBox(
+                            width: 8.w,
+                          ),
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.pushNamed(context, AppRouter.setting);
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: AppColors.white1,
+                                shape: BoxShape.circle,
+                              ),
+                              padding: EdgeInsets.all(8.sp),
+                              child: Image.asset(
+                                'assets/icons/setting.png',
+                                width: 25.w,
+                                height: 25.h,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ))
+                ],
               ),
             ),
-            _buildWelcomeText(getGreting()),
-            Positioned(
-                top: MediaQuery.of(context).size.width * .1 + 5,
-                right: 10.sp,
-                child: Row(
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pushNamed(context, AppRouter.history);
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: AppColors.white1,
-                          shape: BoxShape.circle,
-                        ),
-                        padding: EdgeInsets.all(8.sp),
-                        child: Image.asset(
-                          'assets/icons/history.png',
-                          width: 25.w,
-                          height: 25.h,
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 8.w,
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pushNamed(context, AppRouter.setting);
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: AppColors.white1,
-                          shape: BoxShape.circle,
-                        ),
-                        padding: EdgeInsets.all(8.sp),
-                        child: Image.asset(
-                          'assets/icons/setting.png',
-                          width: 25.w,
-                          height: 25.h,
-                        ),
-                      ),
-                    ),
-                  ],
-                ))
+            SizedBox(height: 30.h,)
           ],
         ),
       ),

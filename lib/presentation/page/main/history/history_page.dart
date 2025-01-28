@@ -1,5 +1,6 @@
 import 'package:e_kantin/core/constant/colors.dart';
 import 'package:e_kantin/core/constant/strings.dart';
+import 'package:e_kantin/core/util/date_coverter.dart';
 import 'package:e_kantin/core/util/price_converter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -114,12 +115,24 @@ class _HistoryPageState extends State<HistoryPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                '#${order.orderId}',
-                style: TextStyle(
-                  fontSize: 12.sp,
-                  fontFamily: 'SemiBold',
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '#${order.orderId}',
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      fontFamily: 'SemiBold',
+                    ),
+                  ),Text(
+                    formatDate(order.createdAt.toString()),
+                    style: TextStyle(
+                      fontSize: 10.sp,
+                      color: AppColors.greyPrice,
+                      fontFamily: 'Medium',
+                    ),
+                  ),
+                ],
               ),
               Text(
                 order.orderStatus,

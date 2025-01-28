@@ -28,17 +28,20 @@ class _PaymentPageState extends State<PaymentPage> {
   final FirebaseService _firebaseService = FirebaseService();
 
   late Timer _timer;
-  int _remainingSeconds = 0; // 1 jam
+  int _remainingSeconds = 0;
+  bool isAlreadyPaid = false;
 
   void startCountdown() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {
-        if (_remainingSeconds > 0) {
-          _remainingSeconds--;
-        } else {
-          _timer.cancel();
-        }
-      });
+      if (mounted) {  // Check if widget is still mounted
+        setState(() {
+          if (_remainingSeconds > 0) {
+            _remainingSeconds--;
+          } else {
+            _timer.cancel();
+          }
+        });
+      }
     });
   }
 
@@ -47,8 +50,6 @@ class _PaymentPageState extends State<PaymentPage> {
     int remainingSeconds = seconds % 60;
     return '$minutes:${remainingSeconds.toString().padLeft(2, '0')}';
   }
-
-  bool isAlreadyPaid = false; // Tambahkan variabel ini di luar initState()
 
   @override
   void initState() {
@@ -61,35 +62,27 @@ class _PaymentPageState extends State<PaymentPage> {
         ? jsonDecode(paymentGatewayResponse)
         : paymentGatewayResponse;
 
-    // Ambil expiry_time
     final expiryTimeString = parsedResponse['expiry_time'];
     if (expiryTimeString == null) {
       throw Exception('expiry_time is missing or null');
     }
 
-    // Parse expiry_time menjadi DateTime
-    final expiryTime = DateTime.parse(expiryTimeString);
-
-    // Hitung waktu tersisa dalam detik
+    final expiryTime = DateTime.parse(expiryTimeString).toLocal();
     final now = DateTime.now();
     _remainingSeconds = expiryTime.difference(now).inSeconds;
-
-    // Pastikan nilai tidak negatif
     _remainingSeconds = _remainingSeconds > 0 ? _remainingSeconds : 0;
 
-    // Mulai countdown
     startCountdown();
 
-    // Listen ke perubahan status order
+    // Set up Firebase listener with mounted check
     _firebaseService.listenToOrder(paymentData['order_id'], (updatedOrder) {
-      if (updatedOrder != null) {
+      if (updatedOrder != null && mounted) {  // Check if widget is still mounted
         setState(() {
-          paymentData = updatedOrder; // Update data jika status order berubah
+          paymentData = updatedOrder;
         });
 
-        // Pastikan hanya menampilkan dialog jika belum pernah ditampilkan
         if (updatedOrder['status'] == 'PAID' && !isAlreadyPaid) {
-          isAlreadyPaid = true; // Tandai bahwa pembayaran sudah berhasil
+          isAlreadyPaid = true;
           showDialog(
             context: context,
             barrierDismissible: false,
@@ -118,8 +111,7 @@ class _PaymentPageState extends State<PaymentPage> {
                   Text(
                     'Terima kasih sudah melakukan pembayaran',
                     textAlign: TextAlign.center,
-                    style:
-                        TextStyle(fontSize: 12.sp, color: AppColors.greyPrice),
+                    style: TextStyle(fontSize: 12.sp, color: AppColors.greyPrice),
                   ),
                   SizedBox(height: 16.h),
                   ElevatedButton(
@@ -153,7 +145,6 @@ class _PaymentPageState extends State<PaymentPage> {
   @override
   void dispose() {
     _timer.cancel();
-    paymentData.clear(); // Menghapus data yang tersimpan di paymentData
     super.dispose();
   }
 
@@ -273,7 +264,7 @@ class _PaymentPageState extends State<PaymentPage> {
                         borderRadius: BorderRadius.circular(80.r),
                       ),
                       child: Text(
-                        _formatTime(_remainingSeconds),
+                        _formatTime(_remainingSeconds - 8),
                         style: TextStyle(
                           fontSize: 10.sp,
                           fontFamily: 'SemiBold',

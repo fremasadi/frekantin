@@ -28,6 +28,9 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
 
   late Timer _timer;
   int _remainingSeconds = 3600; // 1 jam
+  late String currentStatus;
+
+
 
   void startCountdown() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -80,8 +83,8 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
     _firebaseService.listenToOrder(widget.order.orderId, (updatedOrder) {
       if (updatedOrder != null) {
         setState(() {
-          // Update status pembayaran
-          // No need to redefine paymentData, directly update using widget.order.payment
+          currentStatus = updatedOrder['status'];
+
         });
 
         if (updatedOrder['status'] == 'PAID') {
@@ -119,10 +122,7 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
                   SizedBox(height: 16.h),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const BasePage()));
+                      Navigator.push(context, MaterialPageRoute(builder: (context) =>const  BasePage()));
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
@@ -208,14 +208,14 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
           children: [
             Row(
               children: [
-                if (widget.order.orderStatus == 'PENDING')
+                if (currentStatus == 'PENDING')
                   Image.asset(
                     'assets/icons/ic_time.png',
                     width: 30.w,
                     color: AppColors.secondary,
                     height: 30.h,
                   ),
-                if (widget.order.orderStatus == 'PAID')
+                if (currentStatus== 'PAID')
                   Image.asset(
                     'assets/icons/checklist.png',
                     width: 30.w,
@@ -227,7 +227,7 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (widget.order.orderStatus == 'PENDING')
+                    if (currentStatus == 'PENDING')
                       Text(
                         'Bayar Sebelum',
                         style: TextStyle(
@@ -235,7 +235,7 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
                           fontFamily: 'SemiBold',
                         ),
                       ),
-                    if (widget.order.orderStatus == 'PAID')
+                    if (currentStatus == 'PAID')
                       Text(
                         'Pembayaran Berhasil',
                         style: TextStyle(
@@ -254,7 +254,8 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
                   ],
                 ),
                 const Spacer(),
-                Container(
+                if (currentStatus== 'PAID')
+                  Container(
                   padding:
                       EdgeInsets.symmetric(vertical: 8.sp, horizontal: 16.sp),
                   decoration: BoxDecoration(

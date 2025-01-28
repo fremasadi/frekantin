@@ -27,7 +27,7 @@ class KeranjangPage extends StatelessWidget {
           Container(
             padding: EdgeInsets.only(
                 top: ScreenUtil().statusBarHeight,
-                bottom: ScreenUtil().bottomBarHeight * .5),
+                bottom: ScreenUtil().statusBarHeight * .5 ),
             color: AppColors.primary,
             child: Center(
               child: Text(
