@@ -58,98 +58,100 @@ class _ForgotPasswordState extends State<ForgotPassword> {
           }
         },
         builder: (context, state) {
-          return Padding(
-            padding: EdgeInsets.all(12.0.sp),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Center(
-                  child: Image.asset(
-                    'assets/images/img_forgotpassword.png',
-                    width: 300.w,
-                    height: 300.h,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                Text(
-                  'Lupa Password',
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    fontFamily: 'SemiBold',
-                  ),
-                ),
-                SizedBox(
-                  height: 4.h,
-                ),
-                Text(
-                  'Masukkan email anda yang terikat  dengan akun anda dan kami akan mengirimkan  konfirmasi untuk mengatur ulang kata sandi anda.',
-                  style: TextStyle(fontSize: 12.sp),
-                ),
-                SizedBox(
-                  height: 22.h,
-                ),
-                TextFormField(
-                  controller: _controller,
-                  decoration: InputDecoration(
-                    hintText: 'Email',
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.r),
+          return SingleChildScrollView(
+            child: Padding(
+              padding: EdgeInsets.all(12.0.sp),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Center(
+                    child: Image.asset(
+                      'assets/images/img_forgotpassword.png',
+                      width: 300.w,
+                      height: 300.h,
+                      fit: BoxFit.cover,
                     ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.r),
-                      borderSide: BorderSide(
-                        color: AppColors.primary,
-                        width: 2.0,
+                  ),
+                  Text(
+                    'Lupa Password',
+                    style: TextStyle(
+                      fontSize: 14.sp,
+                      fontFamily: 'SemiBold',
+                    ),
+                  ),
+                  SizedBox(
+                    height: 4.h,
+                  ),
+                  Text(
+                    'Masukkan email anda yang terikat  dengan akun anda dan kami akan mengirimkan  konfirmasi untuk mengatur ulang kata sandi anda.',
+                    style: TextStyle(fontSize: 12.sp),
+                  ),
+                  SizedBox(
+                    height: 22.h,
+                  ),
+                  TextFormField(
+                    controller: _controller,
+                    decoration: InputDecoration(
+                      hintText: 'Email',
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(8.r),
+                        borderSide: BorderSide(
+                          color: AppColors.primary,
+                          width: 2.0,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                SizedBox(
-                  height: 60.h,
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(
-                      horizontal: ScreenUtil().screenWidth * .3),
-                  child: InputFormButton(
-                    color: AppColors.primary,
-                    onClick: () {
-                      final email = _controller.text.trim();
-                      if (email.isEmpty || !isValidEmail(email)) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Email tidak valid')),
-                        );
-                        return;
-                      }
-                      context.read<AuthBloc>().add(SendOtpEvent(email));
-                    },
-                    titleText: 'Lanjut',
+                  SizedBox(
+                    height: 60.h,
                   ),
-                ),
-                SizedBox(
-                  height: 8.h,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Sudah Ingat Password? ',
-                      style: TextStyle(fontSize: 12.sp, color: AppColors.black),
-                    ),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.pop(context);
+                  Padding(
+                    padding: EdgeInsets.symmetric(
+                        horizontal: ScreenUtil().screenWidth * .3),
+                    child: InputFormButton(
+                      color: AppColors.primary,
+                      onClick: () {
+                        final email = _controller.text.trim();
+                        if (email.isEmpty || !isValidEmail(email)) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Email tidak valid')),
+                          );
+                          return;
+                        }
+                        context.read<AuthBloc>().add(SendOtpEvent(email));
                       },
-                      child: Text(
-                        'Login',
-                        style: TextStyle(
-                            fontSize: 12.sp,
-                            fontFamily: 'SemiBold',
-                            color: AppColors.primary),
+                      titleText: 'Lanjut',
+                    ),
+                  ),
+                  SizedBox(
+                    height: 8.h,
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Sudah Ingat Password? ',
+                        style: TextStyle(fontSize: 12.sp, color: AppColors.black),
                       ),
-                    )
-                  ],
-                )
-              ],
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text(
+                          'Login',
+                          style: TextStyle(
+                              fontSize: 12.sp,
+                              fontFamily: 'SemiBold',
+                              color: AppColors.primary),
+                        ),
+                      )
+                    ],
+                  )
+                ],
+              ),
             ),
           );
         },

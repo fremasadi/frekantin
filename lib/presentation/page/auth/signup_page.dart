@@ -45,7 +45,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   const SizedBox(height: 40),
                   InputTextFormField(
                     controller: firstNameController,
-                    hint: 'First Name',
+                    hint: 'nama',
                     textInputAction: TextInputAction.next,
                     validation: (String? val) {
                       return val == null || val.isEmpty
@@ -53,17 +53,7 @@ class _SignUpPageState extends State<SignUpPage> {
                           : null;
                     },
                   ),
-                  const SizedBox(height: 12),
-                  InputTextFormField(
-                    controller: lastNameController,
-                    hint: 'Last Name',
-                    textInputAction: TextInputAction.next,
-                    validation: (String? val) {
-                      return val == null || val.isEmpty
-                          ? 'This field can\'t be empty'
-                          : null;
-                    },
-                  ),
+
                   const SizedBox(height: 12),
                   InputTextFormField(
                     controller: emailController,
@@ -90,7 +80,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   const SizedBox(height: 12),
                   InputTextFormField(
                     controller: confirmPasswordController,
-                    hint: 'Confirm Password',
+                    hint: 'Konfirmasi Password',
                     isSecureField: true,
                     textInputAction: TextInputAction.go,
                     validation: (String? val) {
@@ -112,7 +102,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         } else {}
                       }
                     },
-                    titleText: 'Sign Up',
+                    titleText: 'Daftar',
                   ),
                 ],
               ),

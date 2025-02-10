@@ -1,13 +1,16 @@
 import 'package:e_kantin/core/constant/colors.dart';
 import 'package:e_kantin/core/constant/strings.dart';
+import 'package:e_kantin/core/router/app_router.dart';
 import 'package:e_kantin/core/util/date_coverter.dart';
 import 'package:e_kantin/core/util/price_converter.dart';
+import 'package:e_kantin/presentation/page/main/history/review_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../data/models/order.dart';
 import '../../../../data/repository/order_repository.dart';
+import '../../../bloc/cart/cart_bloc.dart';
 import '../../../bloc/order/order_bloc.dart';
 import 'payment_history_page.dart';
 
@@ -383,6 +386,33 @@ class _HistoryPageState extends State<HistoryPage> {
                     ),
                     child: Text(
                       'Bayar',
+                      style: TextStyle(
+                        fontFamily: 'SemiBold',
+                        fontSize: 12.sp,
+                        color: Colors.red,
+                      ),
+                    ),
+                  ),
+                ),
+              if (order.orderStatus == 'COMPLETED')
+                GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ReviewPage(order: order), // Kirim Order ke ReviewPage
+                      ),
+                    );                  },
+                  child: Container(
+                    padding:
+                        EdgeInsets.symmetric(vertical: 4.sp, horizontal: 8.sp),
+                    decoration: BoxDecoration(
+                      color: AppColors.white,
+                      borderRadius: BorderRadius.circular(12.r),
+                      border: Border.all(color: AppColors.greyPrice),
+                    ),
+                    child: Text(
+                      'Nilai',
                       style: TextStyle(
                         fontFamily: 'SemiBold',
                         fontSize: 12.sp,

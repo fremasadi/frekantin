@@ -2,6 +2,7 @@ import 'package:e_kantin/presentation/page/auth/forgot_password.dart';
 import 'package:e_kantin/presentation/page/auth/signin_page.dart';
 import 'package:e_kantin/presentation/page/main/base_page.dart';
 import 'package:e_kantin/presentation/page/main/history/history_page.dart';
+import 'package:e_kantin/presentation/page/main/history/review_page.dart';
 import 'package:e_kantin/presentation/page/main/home/home_page.dart';
 import 'package:e_kantin/presentation/page/main/home/search_page.dart';
 import 'package:e_kantin/presentation/page/main/profile/profile_page.dart';
@@ -24,6 +25,7 @@ class AppRouter {
   static const String payment = '/payment';
   static const String selectPayment = '/select-payment';
   static const String history = '/history';
+  static const String review = '/review';
   static const String setting = '/setting';
 
   //authentication
@@ -51,6 +53,7 @@ class AppRouter {
         return MaterialPageRoute(builder: (_) => const SelectpaymentPage());
       case history:
         return MaterialPageRoute(builder: (_) => const HistoryPage());
+
       case forgotPassword:
         return MaterialPageRoute(builder: (_) => const ForgotPassword());
       case searchProduct:

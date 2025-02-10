@@ -196,19 +196,6 @@ class _SignInPageState extends State<SignInPage> with TickerProviderStateMixin {
                           },
                         ),
                       ),
-                      Text(
-                        'atau',
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          color: CupertinoColors.systemGrey,
-                        ),
-                      ),
-                      SizedBox(height: 12.sp),
-                      Image.asset(
-                        'assets/icons/ic_google.png',
-                        width: 50.w,
-                        height: 50.h,
-                      ),
                       SizedBox(height: 12.sp),
                       GestureDetector(
                         onTap: () {
