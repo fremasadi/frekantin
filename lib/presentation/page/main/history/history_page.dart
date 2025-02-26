@@ -1,6 +1,5 @@
 import 'package:e_kantin/core/constant/colors.dart';
 import 'package:e_kantin/core/constant/strings.dart';
-import 'package:e_kantin/core/router/app_router.dart';
 import 'package:e_kantin/core/util/date_coverter.dart';
 import 'package:e_kantin/core/util/price_converter.dart';
 import 'package:e_kantin/presentation/page/main/history/review_page.dart';
@@ -10,7 +9,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../data/models/order.dart';
 import '../../../../data/repository/order_repository.dart';
-import '../../../bloc/cart/cart_bloc.dart';
 import '../../../bloc/order/order_bloc.dart';
 import 'payment_history_page.dart';
 
@@ -127,7 +125,8 @@ class _HistoryPageState extends State<HistoryPage> {
                       fontSize: 12.sp,
                       fontFamily: 'SemiBold',
                     ),
-                  ),Text(
+                  ),
+                  Text(
                     formatDate(order.createdAt.toString()),
                     style: TextStyle(
                       fontSize: 10.sp,
@@ -254,7 +253,8 @@ class _HistoryPageState extends State<HistoryPage> {
                             ClipRRect(
                               borderRadius: BorderRadius.circular(12.sp),
                               child: Image.network(
-                                '$imageUrl/storage/${orderItem.product.image}', // Menampilkan gambar item
+                                '$imageUrl/storage/${orderItem.product.image}',
+                                // Menampilkan gambar item
                                 width: 100.w,
                                 height: 70.h,
                                 fit: BoxFit.fill,
@@ -400,9 +400,11 @@ class _HistoryPageState extends State<HistoryPage> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ReviewPage(order: order), // Kirim Order ke ReviewPage
+                        builder: (context) => ReviewPage(
+                            order: order), // Kirim Order ke ReviewPage
                       ),
-                    );                  },
+                    );
+                  },
                   child: Container(
                     padding:
                         EdgeInsets.symmetric(vertical: 4.sp, horizontal: 8.sp),

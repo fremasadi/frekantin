@@ -17,3 +17,29 @@ class ReviewError extends ReviewState {
 
   ReviewError(this.message);
 }
+
+class ReviewSubmitSuccess extends ReviewState {}
+
+class ReviewCheckLoading extends ReviewState {}
+
+class ReviewCheckError extends ReviewState {
+  final String message;
+
+  ReviewCheckError(this.message);
+}
+
+class ReviewChecked extends ReviewState {
+  final bool isReviewed;
+  final int? rating;
+  final String? comment;
+  final int orderItemId;
+  final int productId;
+
+  ReviewChecked({
+    required this.isReviewed,
+    this.rating,
+    this.comment,
+    required this.orderItemId,
+    required this.productId,
+  });
+}

@@ -35,7 +35,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const SizedBox(height: 50),
-                  Image.asset('assets/icons/ic_logo.png', height: 80),
+                  Image.asset('assets/images/kantin_nguldi.png', height: 80),
                   const SizedBox(height: 20),
                   Text(
                     "Silakan gunakan alamat email Anda untuk membuat akun baru",
@@ -53,7 +53,6 @@ class _SignUpPageState extends State<SignUpPage> {
                           : null;
                     },
                   ),
-
                   const SizedBox(height: 12),
                   InputTextFormField(
                     controller: emailController,

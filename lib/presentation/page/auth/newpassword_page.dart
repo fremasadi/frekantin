@@ -40,7 +40,24 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
         }
       },
       child: Scaffold(
-        appBar: AppBar(),
+        appBar: AppBar(
+          backgroundColor: AppColors.white,
+          leading: GestureDetector(
+            onTap: () {},
+            child: Icon(
+              Icons.arrow_back,
+              color: AppColors.primary,
+              size: 22.sp,
+            ),
+          ),
+          title: Text(
+            'Atur Ulang Kata Sandi',
+            style: TextStyle(
+                fontSize: 14.sp,
+                fontFamily: 'SemiBold',
+                color: AppColors.black),
+          ),
+        ),
         body: Padding(
           padding: EdgeInsets.all(12.0.sp),
           child: Column(

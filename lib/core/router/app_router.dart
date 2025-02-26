@@ -2,7 +2,6 @@ import 'package:e_kantin/presentation/page/auth/forgot_password.dart';
 import 'package:e_kantin/presentation/page/auth/signin_page.dart';
 import 'package:e_kantin/presentation/page/main/base_page.dart';
 import 'package:e_kantin/presentation/page/main/history/history_page.dart';
-import 'package:e_kantin/presentation/page/main/history/review_page.dart';
 import 'package:e_kantin/presentation/page/main/home/home_page.dart';
 import 'package:e_kantin/presentation/page/main/home/search_page.dart';
 import 'package:e_kantin/presentation/page/main/profile/profile_page.dart';

@@ -64,7 +64,7 @@ class _SplashViewState extends State<SplashView> {
             children: const [
               SplashContent(
                 image: 'assets/images/img_splash01.jpg',
-                title: 'Selamat datang di Frekantin!',
+                title: 'Selamat datang di Kantin Nguldi!',
                 description: 'Solusi Terbaik untuk Pemesanan Makakan Dikantin',
               ),
               SplashContent(

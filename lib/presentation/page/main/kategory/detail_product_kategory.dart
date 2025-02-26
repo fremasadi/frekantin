@@ -76,7 +76,11 @@ class _DetailProductKategoryState extends State<DetailProductKategory> {
                             onTap: () {
                               Navigator.pop(context);
                             },
-                            child: Icon(Icons.arrow_back, size: 28.sp),
+                            child: Icon(
+                              Icons.arrow_back,
+                              size: 28.sp,
+                              color: AppColors.primary,
+                            ),
                           ),
                           SizedBox(width: 16.w),
                           Column(
@@ -386,6 +390,7 @@ class _DetailProductKategoryState extends State<DetailProductKategory> {
           builder: (BuildContext context, StateSetter setState) {
             return Container(
               padding: const EdgeInsets.all(16.0),
+              color: AppColors.white,
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,

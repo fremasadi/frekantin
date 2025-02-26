@@ -1,8 +1,8 @@
 import 'package:e_kantin/presentation/page/main/base_page.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+
 import '../../../core/constant/colors.dart';
 import '../../../core/router/app_router.dart';
 import '../../bloc/auth/auth_bloc.dart';
@@ -78,7 +78,7 @@ class _SignInPageState extends State<SignInPage> with TickerProviderStateMixin {
                     return Transform.scale(
                       scale: _logoSizeAnimation.value,
                       child: Image.asset(
-                        'assets/icons/ic_logo.png',
+                        'assets/images/kantin_nguldi.png',
                         width: 200.w,
                         height: 200.h,
                         fit: BoxFit.contain,

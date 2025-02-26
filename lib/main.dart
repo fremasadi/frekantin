@@ -13,6 +13,7 @@ import 'package:e_kantin/presentation/bloc/category/category_state.dart';
 import 'package:e_kantin/presentation/bloc/order/order_bloc.dart';
 import 'package:e_kantin/presentation/bloc/product/product_bloc.dart';
 import 'package:e_kantin/presentation/bloc/productbycategory/product_by_category.dart';
+import 'package:e_kantin/presentation/bloc/review/review_bloc.dart';
 import 'package:e_kantin/presentation/bloc/search_product/search_product_bloc.dart';
 import 'package:e_kantin/presentation/bloc/user/user_bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -23,6 +24,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'core/router/app_router.dart';
 import 'data/repository/cart_repository.dart';
 import 'data/repository/product_repository.dart';
+import 'data/repository/review_repository.dart';
 import 'presentation/bloc/auth/auth_bloc.dart';
 
 void main() async {
@@ -49,6 +51,7 @@ void main() async {
   final productRepository = ProductRepository();
   final cartRepository = CartRepository();
   final userRepository = UserRepository();
+  final reviewRepository = ReviewRepository(); // Tambahkan ini
 
   runApp(MyApp(
     authRepository: authRepository,
@@ -56,6 +59,7 @@ void main() async {
     productRepository: productRepository,
     cartRepository: cartRepository,
     userRepository: userRepository,
+    reviewRepository: reviewRepository, // Tambahkan ini
   ));
 }
 
@@ -65,6 +69,7 @@ class MyApp extends StatelessWidget {
   final ProductRepository productRepository;
   final CartRepository cartRepository;
   final UserRepository userRepository;
+  final ReviewRepository reviewRepository; // Tambahkan ini
 
   const MyApp({
     super.key,
@@ -73,6 +78,7 @@ class MyApp extends StatelessWidget {
     required this.productRepository,
     required this.cartRepository,
     required this.userRepository,
+    required this.reviewRepository,
   });
 
   @override
@@ -81,65 +87,76 @@ class MyApp extends StatelessWidget {
       designSize: const Size(375, 812),
       minTextAdapt: true,
       builder: (context, child) {
-        return MultiBlocProvider(
+        return MultiRepositoryProvider(
           providers: [
-            BlocProvider<AuthBloc>(
-              create: (context) => AuthBloc(authRepository),
-            ),
-            BlocProvider<UserBloc>(
-                create: (context) =>
-                    UserBloc(userRepository)..add(FetchUserEvent())),
-            BlocProvider<CategoryBloc>(
-              lazy: false,
-              create: (context) =>
-                  CategoryBloc(categoryRepository)..add(FetchCategories()),
-            ),
-            BlocProvider<ProductBloc>(
-                lazy: false,
-                create: (context) => ProductBloc(repository: productRepository)
-                  ..fetchProducts()),
-            BlocProvider<CartBloc>(
-              lazy: false,
-              create: (context) => CartBloc(cartRepository)..add(LoadCart()),
-            ),
-            BlocProvider<ProductByCategoryBloc>(
-              create: (context) =>
-                  ProductByCategoryBloc(repository: productRepository),
-            ),
-            BlocProvider(
-              create: (context) =>
-                  SearchProductBloc(productRepository: ProductRepository()),
-            ),
-            BlocProvider(
-              create: (context) =>
-                  OrderBloc(orderRepository: OrderRepository()),
-            ),
+            RepositoryProvider.value(value: reviewRepository),
+            // Tambahkan repository lain jika perlu
           ],
-          child: BlocListener<AuthBloc, AuthState>(
-            listener: (context, state) {
-              if (state is AuthSuccess) {
-                context.read<CategoryBloc>().add(FetchCategories());
-                context.read<ProductBloc>().fetchProducts();
-                context.read<CartBloc>().add(LoadCart());
-              }
-            },
-            child: MaterialApp(
-              builder: (context, child) {
-                final MediaQueryData data = MediaQuery.of(context);
-                return MediaQuery(
-                  data: data.copyWith(
-                    textScaler: const TextScaler.linear(1.10),
-                  ),
-                  child: child!,
-                );
-              },
-              theme: ThemeData(
-                scaffoldBackgroundColor: AppColors.white,
-                fontFamily: 'Poppins',
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider<AuthBloc>(
+                create: (context) => AuthBloc(authRepository),
               ),
-              initialRoute: AppRouter.checkLog,
-              onGenerateRoute: AppRouter.onGenerateRoute,
-              debugShowCheckedModeBanner: false,
+              BlocProvider<UserBloc>(
+                  create: (context) =>
+                      UserBloc(userRepository)..add(FetchUserEvent())),
+              BlocProvider<CategoryBloc>(
+                lazy: false,
+                create: (context) =>
+                    CategoryBloc(categoryRepository)..add(FetchCategories()),
+              ),
+              BlocProvider<ProductBloc>(
+                  lazy: false,
+                  create: (context) =>
+                      ProductBloc(repository: productRepository)
+                        ..fetchProducts()),
+              BlocProvider<CartBloc>(
+                lazy: false,
+                create: (context) => CartBloc(cartRepository)..add(LoadCart()),
+              ),
+              BlocProvider<ProductByCategoryBloc>(
+                create: (context) =>
+                    ProductByCategoryBloc(repository: productRepository),
+              ),
+              BlocProvider(
+                create: (context) =>
+                    SearchProductBloc(productRepository: ProductRepository()),
+              ),
+              BlocProvider(
+                create: (context) =>
+                    OrderBloc(orderRepository: OrderRepository()),
+              ),
+              BlocProvider<ReviewBloc>(
+                create: (context) =>
+                    ReviewBloc(repository: ReviewRepository(), productId: 0),
+              ),
+            ],
+            child: BlocListener<AuthBloc, AuthState>(
+              listener: (context, state) {
+                if (state is AuthSuccess) {
+                  context.read<CategoryBloc>().add(FetchCategories());
+                  context.read<ProductBloc>().fetchProducts();
+                  context.read<CartBloc>().add(LoadCart());
+                }
+              },
+              child: MaterialApp(
+                builder: (context, child) {
+                  final MediaQueryData data = MediaQuery.of(context);
+                  return MediaQuery(
+                    data: data.copyWith(
+                      textScaler: const TextScaler.linear(1.10),
+                    ),
+                    child: child!,
+                  );
+                },
+                theme: ThemeData(
+                  scaffoldBackgroundColor: AppColors.white,
+                  fontFamily: 'Poppins',
+                ),
+                initialRoute: AppRouter.checkLog,
+                onGenerateRoute: AppRouter.onGenerateRoute,
+                debugShowCheckedModeBanner: false,
+              ),
             ),
           ),
         );

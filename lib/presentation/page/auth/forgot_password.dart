@@ -25,12 +25,16 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.white,
-        leading: Icon(
-          Icons.arrow_back,
-          color: AppColors.black,
-          size: 22.sp,
+        leading: GestureDetector(
+          onTap: () {
+            Navigator.pop(context);
+          },
+          child: Icon(
+            Icons.arrow_back,
+            color: AppColors.primary,
+            size: 22.sp,
+          ),
         ),
-        centerTitle: true,
         title: Text(
           'Lupa Password',
           style: TextStyle(
@@ -134,7 +138,8 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                     children: [
                       Text(
                         'Sudah Ingat Password? ',
-                        style: TextStyle(fontSize: 12.sp, color: AppColors.black),
+                        style:
+                            TextStyle(fontSize: 12.sp, color: AppColors.black),
                       ),
                       GestureDetector(
                         onTap: () {
