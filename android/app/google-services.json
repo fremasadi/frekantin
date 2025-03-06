@@ -10,7 +10,26 @@
       "client_info": {
         "mobilesdk_app_id": "1:1043350175679:android:595d191fc9ca134b4fab0a",
         "android_client_info": {
-          "package_name": "com.example.e_kantin"
+          "package_name": "com.example.frekantin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCNjnbWpe0UZ6ykxAz0mTVjctZwO2T-WjA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1043350175679:android:20455bc3d08cbae04fab0a",
+        "android_client_info": {
+          "package_name": "com.example.sellerfrekantin"
         }
       },
       "oauth_client": [],

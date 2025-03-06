@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:http/http.dart' as http;
 import '../../core/constant/strings.dart';
 
@@ -6,27 +7,66 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthRepository {
   Future<String?> login(String email, String password) async {
-    final response = await http.post(
-      Uri.parse('$baseUrl/login/customer'),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
-        'email': email,
-        'password': password,
-      }),
-    );
+    try {
+      // Ambil FCM token
+      String? fcmToken = await FirebaseMessaging.instance.getToken();
+      if (fcmToken == null) {
+        throw Exception("FCM Token tidak tersedia");
+      } else {
+        print('FCM Token: $fcmToken');
+      }
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      final token = data['token'];
+      final response = await http.post(
+        Uri.parse('$baseUrl/login/customer'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'email': email,
+          'password': password,
+          'fcm_token': fcmToken, // Kirim FCM token ke backend
+        }),
+      );
 
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        final token = data['token'];
+
+        SharedPreferences prefs = await SharedPreferences.getInstance();
+        await prefs.setString('auth_token', token);
+        await prefs.setString('fcm_token', fcmToken); // Simpan FCM token lokal
+        return token;
+      } else {
+        print('dancok');
+        throw Exception('Failed to login');
+      }
+    } catch (e) {
+      throw Exception('Login error: $e');
+    }
+  }
+
+  Future<void> updateFcmToken() async {
+    try {
       SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('auth_token', token);
+      final token = prefs.getString('auth_token');
+      final fcmToken = await FirebaseMessaging.instance.getToken();
 
-      return token;
-    } else {
-      throw Exception('Failed to login');
+      if (token == null || fcmToken == null) return;
+
+      final response = await http.post(
+        Uri.parse('$baseUrl/update-fcm-token'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({'fcm_token': fcmToken}),
+      );
+
+      if (response.statusCode == 200) {
+        await prefs.setString('fcm_token', fcmToken); // Simpan token baru
+      }
+    } catch (e) {
+      print('Error updating FCM Token: $e');
     }
   }
 

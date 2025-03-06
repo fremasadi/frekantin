@@ -25,25 +25,34 @@ import 'core/router/app_router.dart';
 import 'data/repository/cart_repository.dart';
 import 'data/repository/product_repository.dart';
 import 'data/repository/review_repository.dart';
+import 'data/service/notification_service.dart';
 import 'presentation/bloc/auth/auth_bloc.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  FirebaseOptions firebaseOptions = Platform.isIOS
-      ? const FirebaseOptions(
-          apiKey: 'AIzaSyDs1BXE6XgW7RaCwLx9jrSnfuAmnlQSZ3I',
-          appId: '1:1043350175679:ios:eda4a92cb5b984c34fab0a',
-          messagingSenderId: '',
-          projectId: 'fre-kantin',
-        )
-      : const FirebaseOptions(
-          apiKey: 'AIzaSyCNjnbWpe0UZ6ykxAz0mTVjctZwO2T-WjA',
-          appId: '1:1043350175679:android:595d191fc9ca134b4fab0a',
-          messagingSenderId: '',
-          projectId: 'fre-kantin',
-        );
+  try {
+    FirebaseOptions firebaseOptions = Platform.isIOS
+        ? const FirebaseOptions(
+            apiKey: 'AIzaSyDs1BXE6XgW7RaCwLx9jrSnfuAmnlQSZ3I',
+            appId: '1:1043350175679:ios:eda4a92cb5b984c34fab0a',
+            messagingSenderId: '1043350175679',
+            projectId: 'fre-kantin',
+          )
+        : const FirebaseOptions(
+            apiKey: 'AIzaSyCNjnbWpe0UZ6ykxAz0mTVjctZwO2T-WjA',
+            appId: '1:1043350175679:android:595d191fc9ca134b4fab0a',
+            messagingSenderId: '1043350175679',
+            projectId: 'fre-kantin',
+          );
+    await Firebase.initializeApp(options: firebaseOptions);
+    print('Firebase initialized successfully');
+  } catch (e) {
+    print('Error initializing Firebase: $e');
+  }
 
-  await Firebase.initializeApp(options: firebaseOptions);
+  final notificationService = NotificationService();
+  await notificationService.initialize();
+  // AuthRepository().updateFcmToken(); // Perbarui token jika berubah
 
   // Inisialisasi repositories
   final authRepository = AuthRepository();
