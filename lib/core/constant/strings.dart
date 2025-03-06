@@ -1,8 +1,7 @@
 // Networking and APIs
-const String baseUrl = 'http://192.168.1.9:8080/api';
-const String imageUrl = 'http://192.168.1.9:8080';
-const String defaultSources = '';
-
-// Storage and Databases
-const String articlesTableName = '';
-const String databaseName = '';
+// const String baseUrl = 'https://frekantin.farrcode.com/api';
+// const String imageUrl = 'https://frekantin.farrcode.com/';
+const String baseUrl = 'https://frekantin.frecode.my.id/api';
+const String imageUrl = 'https://frekantin.frecode.my.id/';
+// const String baseUrl = 'http://192.168.1.9:8080/api';
+// const String imageUrl = 'http://192.168.1.9:8080';

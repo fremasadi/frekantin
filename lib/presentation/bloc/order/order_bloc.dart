@@ -7,6 +7,7 @@ import '../../../data/models/order.dart';
 import '../../../data/repository/order_repository.dart';
 
 part 'order_event.dart';
+
 part 'order_state.dart';
 
 class OrderBloc extends Bloc<OrderEvent, OrderState> {
@@ -17,6 +18,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
     on<StartCountdownEvent>(_onStartCountdownEvent);
     on<FetchOrdersEvent>(_onFetchOrdersEvent);
   }
+
   Future<void> _onFetchOrdersEvent(
       FetchOrdersEvent event, Emitter<OrderState> emit) async {
     emit(OrderLoading());
@@ -50,6 +52,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
         emit(OrderFailure(errorData['message'] ?? 'Gagal membuat pesanan.'));
       }
     } catch (e) {
+      print(OrderFailure(e.toString()));
       emit(OrderFailure(e.toString()));
     }
   }

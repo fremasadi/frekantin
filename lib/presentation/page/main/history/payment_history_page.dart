@@ -17,6 +17,7 @@ class PaymentHistoryPage extends StatefulWidget {
     super.key,
     required this.order,
   });
+
   final Order order;
 
   @override
@@ -29,8 +30,6 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
   late Timer _timer;
   int _remainingSeconds = 3600; // 1 jam
   late String currentStatus;
-
-
 
   void startCountdown() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -84,7 +83,6 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
       if (updatedOrder != null) {
         setState(() {
           currentStatus = updatedOrder['status'];
-
         });
 
         if (updatedOrder['status'] == 'PAID') {
@@ -122,7 +120,10 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
                   SizedBox(height: 16.h),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) =>const  BasePage()));
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const BasePage()));
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
@@ -148,12 +149,8 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
     });
   }
 
-  late final StreamSubscription _firebaseListener;
-
   @override
   void dispose() {
-    _firebaseListener.cancel();
-
     _timer.cancel();
     super.dispose();
   }
@@ -215,7 +212,7 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
                     color: AppColors.secondary,
                     height: 30.h,
                   ),
-                if (currentStatus== 'PAID')
+                if (currentStatus == 'PAID')
                   Image.asset(
                     'assets/icons/checklist.png',
                     width: 30.w,
@@ -254,24 +251,24 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
                   ],
                 ),
                 const Spacer(),
-                if (currentStatus== 'PAID')
+                if (currentStatus == 'PENDING')
                   Container(
-                  padding:
-                      EdgeInsets.symmetric(vertical: 8.sp, horizontal: 16.sp),
-                  decoration: BoxDecoration(
-                    color: AppColors.primary
-                        .withAlpha((255 * 0.2).toInt()), // Menghitung alpha
-                    borderRadius: BorderRadius.circular(80.r),
-                  ),
-                  child: Text(
-                    _formatTime(_remainingSeconds),
-                    style: TextStyle(
-                      fontSize: 10.sp,
-                      fontFamily: 'SemiBold',
-                      color: AppColors.primary,
+                    padding:
+                        EdgeInsets.symmetric(vertical: 8.sp, horizontal: 16.sp),
+                    decoration: BoxDecoration(
+                      color: AppColors.primary
+                          .withAlpha((255 * 0.2).toInt()), // Menghitung alpha
+                      borderRadius: BorderRadius.circular(80.r),
+                    ),
+                    child: Text(
+                      _formatTime(_remainingSeconds),
+                      style: TextStyle(
+                        fontSize: 10.sp,
+                        fontFamily: 'SemiBold',
+                        color: AppColors.primary,
+                      ),
                     ),
                   ),
-                ),
               ],
             ),
             const Padding(
@@ -390,14 +387,6 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
             SizedBox(
               height: 24.h,
             ),
-            InputFormButton(
-              onClick: () {
-                Navigator.pushReplacement(context,
-                    MaterialPageRoute(builder: (context) => const BasePage()));
-              },
-              titleText: 'Dashboard',
-              color: AppColors.primary,
-            )
           ],
         ),
       ),
