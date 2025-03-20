@@ -13,7 +13,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         final token = await authRepository.login(event.email, event.password);
         emit(AuthSuccess(token!));
       } catch (e) {
-        print('error $e');
         emit(AuthFailure('Login failed. Please try again.'));
       }
     });

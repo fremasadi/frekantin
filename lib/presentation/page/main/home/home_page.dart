@@ -1,6 +1,5 @@
-import 'dart:async';
-
 import 'package:e_kantin/core/constant/colors.dart';
+import 'package:e_kantin/core/constant/strings.dart';
 import 'package:e_kantin/core/router/app_router.dart';
 import 'package:e_kantin/presentation/page/main/kategory/detail_product_kategory.dart';
 import 'package:e_kantin/presentation/page/main/kategory/kategory_page.dart';
@@ -13,10 +12,12 @@ import 'package:shimmer/shimmer.dart';
 import '../../../../data/repository/review_repository.dart';
 import '../../../bloc/category/category_bloc.dart';
 import '../../../bloc/category/categoty_event.dart';
+import '../../../bloc/content/content_bloc.dart';
 import '../../../bloc/product/product_bloc.dart';
 import '../../../bloc/review/review_bloc.dart';
 import '../../../bloc/user/user_bloc.dart';
 import '../../widgets/category_card.dart';
+import '../../widgets/image_slider.dart';
 import '../produk/detail_produk_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -27,32 +28,6 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late final PageController _pageController;
-  late final Timer _timer;
-  int _currentPage = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _pageController = PageController();
-    _startAutoScroll();
-  }
-
-  void _startAutoScroll() {
-    _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
-      setState(() {
-        _currentPage = (_currentPage + 1) % 3;
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    _timer.cancel();
-    super.dispose();
-  }
-
   String getGreting() {
     var hour = DateTime.now().hour;
     if (hour < 12) {
@@ -212,15 +187,18 @@ class _HomePageState extends State<HomePage> {
             Expanded(
               child: Stack(
                 children: [
-                  PageView.builder(
-                    controller: _pageController,
-                    itemCount: 3,
-                    itemBuilder: (context, index) {
-                      return Image.asset(
-                        'assets/images/img_slider.jpg',
-                        width: MediaQuery.of(context).size.width,
-                        fit: BoxFit.fill,
-                      );
+                  BlocBuilder<ImageContentBloc, ImageContentState>(
+                    builder: (context, state) {
+                      if (state.isLoading) {
+                        return const Center(child: CircularProgressIndicator());
+                      } else if (state.errorMessage.isNotEmpty) {
+                        return Center(child: Text(state.errorMessage));
+                      } else {
+                        return AutoSlidePageView(
+                          images: state.images,
+                          imageUrl: imageUrl,
+                        );
+                      }
                     },
                   ),
                   _buildWelcomeText(getGreting()),
@@ -271,7 +249,9 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-            SizedBox(height: 30.h,)
+            SizedBox(
+              height: 30.h,
+            )
           ],
         ),
       ),

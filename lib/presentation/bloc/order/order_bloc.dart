@@ -52,7 +52,6 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
         emit(OrderFailure(errorData['message'] ?? 'Gagal membuat pesanan.'));
       }
     } catch (e) {
-      print(OrderFailure(e.toString()));
       emit(OrderFailure(e.toString()));
     }
   }

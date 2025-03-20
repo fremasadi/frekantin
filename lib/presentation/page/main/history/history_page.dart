@@ -136,13 +136,38 @@ class _HistoryPageState extends State<HistoryPage> {
                   ),
                 ],
               ),
-              Text(
-                order.orderStatus,
-                style: TextStyle(
-                  fontSize: 10.sp,
-                  color: AppColors.greyPrice,
+              if (order.orderStatus == 'PENDING')
+                Text(
+                  'Tertunda',
+                  style: TextStyle(
+                    fontSize: 10.sp,
+                    color: AppColors.greyPrice,
+                  ),
                 ),
-              ),
+              if (order.orderStatus == 'PAID')
+                Text(
+                  'Sudah Dibayar',
+                  style: TextStyle(
+                    fontSize: 10.sp,
+                    color: AppColors.greyPrice,
+                  ),
+                ),
+              if (order.orderStatus == 'COMPLETED')
+                Text(
+                  'Selesai',
+                  style: TextStyle(
+                    fontSize: 10.sp,
+                    color: AppColors.greyPrice,
+                  ),
+                ),
+              if (order.orderStatus == 'CANCELLED')
+                Text(
+                  'Batal',
+                  style: TextStyle(
+                    fontSize: 10.sp,
+                    color: AppColors.greyPrice,
+                  ),
+                ),
             ],
           ),
           const Divider(),

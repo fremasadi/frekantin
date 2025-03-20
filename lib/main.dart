@@ -4,17 +4,20 @@ import 'package:e_kantin/core/constant/colors.dart';
 import 'package:e_kantin/data/repository/auth_repository.dart';
 import 'package:e_kantin/data/repository/category_repository.dart';
 import 'package:e_kantin/data/repository/order_repository.dart';
+import 'package:e_kantin/data/repository/table_repository.dart';
 import 'package:e_kantin/data/repository/user_repository.dart';
 import 'package:e_kantin/presentation/bloc/auth/auth_state.dart';
 import 'package:e_kantin/presentation/bloc/cart/cart_bloc.dart';
 import 'package:e_kantin/presentation/bloc/cart/cart_event.dart';
 import 'package:e_kantin/presentation/bloc/category/category_bloc.dart';
 import 'package:e_kantin/presentation/bloc/category/category_state.dart';
+import 'package:e_kantin/presentation/bloc/content/content_bloc.dart';
 import 'package:e_kantin/presentation/bloc/order/order_bloc.dart';
 import 'package:e_kantin/presentation/bloc/product/product_bloc.dart';
 import 'package:e_kantin/presentation/bloc/productbycategory/product_by_category.dart';
 import 'package:e_kantin/presentation/bloc/review/review_bloc.dart';
 import 'package:e_kantin/presentation/bloc/search_product/search_product_bloc.dart';
+import 'package:e_kantin/presentation/bloc/table_number/table_number_bloc.dart';
 import 'package:e_kantin/presentation/bloc/user/user_bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -23,6 +26,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'core/router/app_router.dart';
 import 'data/repository/cart_repository.dart';
+import 'data/repository/content_repository.dart';
 import 'data/repository/product_repository.dart';
 import 'data/repository/review_repository.dart';
 import 'data/service/notification_service.dart';
@@ -45,14 +49,13 @@ void main() async {
             projectId: 'fre-kantin',
           );
     await Firebase.initializeApp(options: firebaseOptions);
-    print('Firebase initialized successfully');
   } catch (e) {
-    print('Error initializing Firebase: $e');
+    throw ('error init firebase main');
   }
 
   final notificationService = NotificationService();
   await notificationService.initialize();
-  // AuthRepository().updateFcmToken(); // Perbarui token jika berubah
+  AuthRepository().updateFcmToken(); // Perbarui token jika berubah
 
   // Inisialisasi repositories
   final authRepository = AuthRepository();
@@ -61,6 +64,7 @@ void main() async {
   final cartRepository = CartRepository();
   final userRepository = UserRepository();
   final reviewRepository = ReviewRepository(); // Tambahkan ini
+  final contentRepository = ContentRepository();
 
   runApp(MyApp(
     authRepository: authRepository,
@@ -68,7 +72,9 @@ void main() async {
     productRepository: productRepository,
     cartRepository: cartRepository,
     userRepository: userRepository,
-    reviewRepository: reviewRepository, // Tambahkan ini
+    reviewRepository: reviewRepository,
+    // Tambahkan ini
+    contentRepository: contentRepository, // Tambahkan ini
   ));
 }
 
@@ -79,6 +85,7 @@ class MyApp extends StatelessWidget {
   final CartRepository cartRepository;
   final UserRepository userRepository;
   final ReviewRepository reviewRepository; // Tambahkan ini
+  final ContentRepository contentRepository; // Tambahkan ini
 
   const MyApp({
     super.key,
@@ -88,6 +95,7 @@ class MyApp extends StatelessWidget {
     required this.cartRepository,
     required this.userRepository,
     required this.reviewRepository,
+    required this.contentRepository, // Tambahkan ini
   });
 
   @override
@@ -99,7 +107,7 @@ class MyApp extends StatelessWidget {
         return MultiRepositoryProvider(
           providers: [
             RepositoryProvider.value(value: reviewRepository),
-            // Tambahkan repository lain jika perlu
+            RepositoryProvider.value(value: contentRepository), // Tambahkan ini
           ],
           child: MultiBlocProvider(
             providers: [
@@ -135,9 +143,18 @@ class MyApp extends StatelessWidget {
                 create: (context) =>
                     OrderBloc(orderRepository: OrderRepository()),
               ),
+              BlocProvider(
+                create: (context) =>
+                    TableNumberBloc(repository: TableNumberRepository()),
+              ),
               BlocProvider<ReviewBloc>(
                 create: (context) =>
                     ReviewBloc(repository: ReviewRepository(), productId: 0),
+              ),
+              BlocProvider<ImageContentBloc>(
+                create: (context) =>
+                    ImageContentBloc(repository: contentRepository)
+                      ..add(FetchActiveImagesEvent()),
               ),
             ],
             child: BlocListener<AuthBloc, AuthState>(

@@ -12,8 +12,6 @@ class AuthRepository {
       String? fcmToken = await FirebaseMessaging.instance.getToken();
       if (fcmToken == null) {
         throw Exception("FCM Token tidak tersedia");
-      } else {
-        print('FCM Token: $fcmToken');
       }
 
       final response = await http.post(
@@ -37,7 +35,6 @@ class AuthRepository {
         await prefs.setString('fcm_token', fcmToken); // Simpan FCM token lokal
         return token;
       } else {
-        print('dancok');
         throw Exception('Failed to login');
       }
     } catch (e) {
@@ -66,7 +63,7 @@ class AuthRepository {
         await prefs.setString('fcm_token', fcmToken); // Simpan token baru
       }
     } catch (e) {
-      print('Error updating FCM Token: $e');
+      throw Exception('No token found');
     }
   }
 

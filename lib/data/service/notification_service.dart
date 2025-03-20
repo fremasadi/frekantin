@@ -7,7 +7,6 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // Pastikan Firebase diinisialisasi untuk background handler
   await Firebase.initializeApp();
-  print('Handling background message: ${message.notification?.title}');
 }
 
 class NotificationService {
@@ -42,9 +41,7 @@ class NotificationService {
 
       await _flutterLocalNotificationsPlugin.initialize(
         initSettings,
-        onDidReceiveNotificationResponse: (details) {
-          print('Notification tapped: ${details.payload}');
-        },
+        onDidReceiveNotificationResponse: (details) {},
       );
 
       // 4. Set up handlers untuk berbagai kondisi
@@ -55,26 +52,24 @@ class NotificationService {
       FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
         _showNotification(message);
       });
-
-      print('NotificationService initialized successfully');
     } catch (e) {
-      print('Error initializing NotificationService: $e');
+      throw ('error firebase');
     }
   }
 
   Future<void> _showNotification(RemoteMessage message) async {
     try {
-      final AndroidNotificationDetails androidDetails =
-          const AndroidNotificationDetails(
+      const AndroidNotificationDetails androidDetails =
+          AndroidNotificationDetails(
         'high_importance_channel',
         'High Importance Notifications',
         importance: Importance.max,
         priority: Priority.high,
       );
 
-      final NotificationDetails notificationDetails = NotificationDetails(
+      const NotificationDetails notificationDetails = NotificationDetails(
         android: androidDetails,
-        iOS: const DarwinNotificationDetails(),
+        iOS: DarwinNotificationDetails(),
       );
 
       await _flutterLocalNotificationsPlugin.show(
@@ -85,7 +80,7 @@ class NotificationService {
         payload: message.data.toString(),
       );
     } catch (e) {
-      print('Error showing notification: $e');
+      throw ('error notifikasi');
     }
   }
 }
