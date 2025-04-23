@@ -68,67 +68,64 @@ class _DetailProductKategoryState extends State<DetailProductKategory> {
                 ),
                 child: Column(
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: Row(
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.pop(context);
-                            },
-                            child: Icon(
-                              Icons.arrow_back,
-                              size: 28.sp,
-                              color: AppColors.primary,
+                    Row(
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.pop(context);
+                          },
+                          child: Icon(
+                            Icons.arrow_back,
+                            size: 28.sp,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                        SizedBox(width: 16.w),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Aneka ${widget.categoryName} dikantin',
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                fontFamily: 'SemiBold',
+                              ),
                             ),
-                          ),
-                          SizedBox(width: 16.w),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Aneka ${widget.categoryName} dikantin',
-                                style: TextStyle(
-                                  fontSize: 14.sp,
-                                  fontFamily: 'SemiBold',
-                                ),
-                              ),
-                              Text(
-                                'Yuk pilihlah kesukaan anda',
-                                style: TextStyle(fontSize: 12.sp),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+                            Text(
+                              'Yuk pilihlah kesukaan anda',
+                              style: TextStyle(fontSize: 12.sp),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
-                    SizedBox(
-                      height: 30.h,
-                      child: ListView(
-                        scrollDirection: Axis.horizontal,
-                        children: [
-                          RoundedCard(
-                            title: 'Bintang 4.5+',
-                            onTap: () {},
-                          ),
-                          RoundedCard(
-                            title: 'Rentang Harga',
-                            onTap: () {
-                              showModalBottomSheet(
-                                context: context,
-                                builder: (context) =>
-                                    buildBottomDialog(context),
-                              );
-                            },
-                            icon: Icons.keyboard_arrow_down,
-                          ),
-                          RoundedCard(
-                            title: 'Buka Sekarang',
-                            onTap: () {},
-                          ),
-                        ],
-                      ),
-                    ),
+                    // SizedBox(
+                    //   height: 30.h,
+                    //   child: ListView(
+                    //     scrollDirection: Axis.horizontal,
+                    //     children: [
+                    //       RoundedCard(
+                    //         title: 'Bintang 4.5+',
+                    //         onTap: () {},
+                    //       ),
+                    //       RoundedCard(
+                    //         title: 'Rentang Harga',
+                    //         onTap: () {
+                    //           showModalBottomSheet(
+                    //             context: context,
+                    //             builder: (context) =>
+                    //                 buildBottomDialog(context),
+                    //           );
+                    //         },
+                    //         icon: Icons.keyboard_arrow_down,
+                    //       ),
+                    //       RoundedCard(
+                    //         title: 'Buka Sekarang',
+                    //         onTap: () {},
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
@@ -181,8 +178,8 @@ class _DetailProductKategoryState extends State<DetailProductKategory> {
                                             BorderRadius.circular(8.0),
                                         child: Image.network(
                                           product.image,
-                                          height: 100.h,
-                                          width: 100.w,
+                                          height: 90.h,
+                                          width: 90.w,
                                           fit: BoxFit.cover,
                                         ),
                                       ),

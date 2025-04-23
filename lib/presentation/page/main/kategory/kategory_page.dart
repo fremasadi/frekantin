@@ -66,7 +66,7 @@ class KategoryPage extends StatelessWidget {
           borderRadius: BorderRadius.circular(16.sp),
           child: CachedNetworkImage(
             imageUrl: category.imageUrl!,
-            height: 120.h,
+            height: 100.h,
             width: double.infinity,
             fit: BoxFit.fill,
           ),

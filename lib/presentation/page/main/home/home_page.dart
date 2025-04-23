@@ -190,7 +190,7 @@ class _HomePageState extends State<HomePage> {
                   BlocBuilder<ImageContentBloc, ImageContentState>(
                     builder: (context, state) {
                       if (state.isLoading) {
-                        return const Center(child: CircularProgressIndicator());
+                        return const Center(child: SizedBox());
                       } else if (state.errorMessage.isNotEmpty) {
                         return Center(child: Text(state.errorMessage));
                       } else {
@@ -407,30 +407,38 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: List.generate(4, (index) {
-              return Shimmer.fromColors(
-                baseColor: AppColors.greyLoading,
-                highlightColor: Colors.grey.shade100,
-                child: Container(
-                  margin: EdgeInsets.all(16.sp),
-                  height: 60.h,
-                  width: 60.w,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: AppColors.greyLoading,
+          SizedBox(
+            height: 80.h, // Sesuaikan tinggi agar tidak terpotong
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              // Agar bisa di-scroll horizontal
+              itemCount: 6,
+              // Jumlah item
+              itemBuilder: (context, index) {
+                return Shimmer.fromColors(
+                  baseColor: AppColors.greyLoading,
+                  highlightColor: Colors.grey.shade100,
+                  child: Container(
+                    margin: EdgeInsets.symmetric(horizontal: 8.sp),
+                    // Margin antar item
+                    height: 60.h,
+                    width: 60.w,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: AppColors.greyLoading,
+                    ),
                   ),
-                ),
-              );
-            }),
+                );
+              },
+            ),
           ),
           Shimmer.fromColors(
             baseColor: AppColors.greyLoading,
             highlightColor: Colors.grey.shade100,
             child: Container(
               padding: EdgeInsets.all(16.sp),
-              height: 250.h,
+              margin: EdgeInsets.all(16.sp),
+              height: 200.h,
               width: ScreenUtil().screenWidth,
               decoration: BoxDecoration(
                 color: AppColors.greyLoading,
@@ -438,13 +446,13 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
-          SizedBox(height: 16.sp),
           Shimmer.fromColors(
             baseColor: AppColors.greyLoading,
             highlightColor: Colors.grey.shade100,
             child: Container(
               padding: EdgeInsets.all(16.sp),
-              height: 250.h,
+              margin: EdgeInsets.all(16.sp),
+              height: 200.h,
               width: ScreenUtil().screenWidth,
               decoration: BoxDecoration(
                 color: AppColors.greyLoading,

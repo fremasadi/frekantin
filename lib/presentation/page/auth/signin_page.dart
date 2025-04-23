@@ -129,27 +129,27 @@ class _SignInPageState extends State<SignInPage> with TickerProviderStateMixin {
                         contentPadding: EdgeInsets.symmetric(
                             vertical: 12.h, horizontal: 12.w),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            GestureDetector(
-                              onTap: () {
-                                Navigator.pushNamed(
-                                    context, AppRouter.forgotPassword);
-                              },
-                              child: Text(
-                                'Lupa Password?',
-                                style: TextStyle(
-                                  fontSize: 14.sp,
-                                  color: Colors.redAccent,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                      // Padding(
+                      //   padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      //   child: Row(
+                      //     mainAxisAlignment: MainAxisAlignment.end,
+                      //     children: [
+                      //       GestureDetector(
+                      //         onTap: () {
+                      //           Navigator.pushNamed(
+                      //               context, AppRouter.forgotPassword);
+                      //         },
+                      //         child: Text(
+                      //           'Lupa Password?',
+                      //           style: TextStyle(
+                      //             fontSize: 14.sp,
+                      //             color: Colors.redAccent,
+                      //           ),
+                      //         ),
+                      //       ),
+                      //     ],
+                      //   ),
+                      // ),
                       Container(
                         margin: EdgeInsets.symmetric(vertical: 12.sp),
                         padding: EdgeInsets.symmetric(vertical: 6.sp),
@@ -196,7 +196,6 @@ class _SignInPageState extends State<SignInPage> with TickerProviderStateMixin {
                           },
                         ),
                       ),
-                      SizedBox(height: 12.sp),
                       GestureDetector(
                         onTap: () {
                           Navigator.pushNamed(context, AppRouter.signUp);

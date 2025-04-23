@@ -53,7 +53,7 @@ class _ProductCardState extends State<ProductCard> {
             ),
           ),
           Positioned(
-            top: 185.sp,
+            top: 210.sp,
             left: 15.sp,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,8 +62,9 @@ class _ProductCardState extends State<ProductCard> {
                   children: [
                     Container(
                       decoration: BoxDecoration(
-                          color: AppColors.secondary,
-                          borderRadius: BorderRadius.circular(16.sp)),
+                        color: AppColors.secondary,
+                        borderRadius: BorderRadius.circular(16.sp),
+                      ),
                       padding: EdgeInsets.symmetric(
                         vertical: 4.sp,
                         horizontal: 12.sp,
