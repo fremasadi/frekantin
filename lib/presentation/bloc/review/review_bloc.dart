@@ -46,24 +46,26 @@ class ReviewBloc extends Bloc<ReviewEvent, ReviewState> {
       }
     });
     on<CheckReviewStatus>((event, emit) async {
-      emit(ReviewCheckLoading()); // Tampilkan loading
+      emit(ReviewCheckLoading());
+
       try {
-        // Panggil repository untuk memeriksa status review
         final data = await repository.checkReview(
           event.orderItemId,
           event.productId,
         );
 
-        // Kirim state ReviewChecked dengan data yang diterima
+        // DEBUG: Cetak isi data dari API
+
         emit(ReviewChecked(
           isReviewed: data['status'] ?? false,
-          rating: data['rating'],
+          rating: data['rating'] != null
+              ? int.tryParse(data['rating'].toString())
+              : null,
           comment: data['comment'],
           orderItemId: event.orderItemId,
           productId: event.productId,
         ));
       } catch (e) {
-        // Jika terjadi error, kirim state ReviewCheckError
         emit(ReviewCheckError(e.toString()));
       }
     });

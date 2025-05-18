@@ -107,9 +107,16 @@ class _SignInPageState extends State<SignInPage> with TickerProviderStateMixin {
                         hint: 'Email',
                         validation: (value) {
                           if (value == null || value.isEmpty) {
-                            return 'Please enter your email';
+                            return 'Masukan Email Anda';
                           }
-                          // Add more validation if needed (e.g. email format check)
+
+                          // Validasi format email
+                          final emailRegex =
+                              RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+                          if (!emailRegex.hasMatch(value)) {
+                            return 'Tolong Masukan Email Dengan Benar';
+                          }
+
                           return null;
                         },
                         contentPadding: EdgeInsets.symmetric(
@@ -129,27 +136,27 @@ class _SignInPageState extends State<SignInPage> with TickerProviderStateMixin {
                         contentPadding: EdgeInsets.symmetric(
                             vertical: 12.h, horizontal: 12.w),
                       ),
-                      // Padding(
-                      //   padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      //   child: Row(
-                      //     mainAxisAlignment: MainAxisAlignment.end,
-                      //     children: [
-                      //       GestureDetector(
-                      //         onTap: () {
-                      //           Navigator.pushNamed(
-                      //               context, AppRouter.forgotPassword);
-                      //         },
-                      //         child: Text(
-                      //           'Lupa Password?',
-                      //           style: TextStyle(
-                      //             fontSize: 14.sp,
-                      //             color: Colors.redAccent,
-                      //           ),
-                      //         ),
-                      //       ),
-                      //     ],
-                      //   ),
-                      // ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.pushNamed(
+                                    context, AppRouter.forgotPassword);
+                              },
+                              child: Text(
+                                'Lupa Password?',
+                                style: TextStyle(
+                                  fontSize: 14.sp,
+                                  color: Colors.redAccent,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                       Container(
                         margin: EdgeInsets.symmetric(vertical: 12.sp),
                         padding: EdgeInsets.symmetric(vertical: 6.sp),

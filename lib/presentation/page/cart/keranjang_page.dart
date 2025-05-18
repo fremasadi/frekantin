@@ -21,6 +21,8 @@ class KeranjangPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    context.read<CartBloc>().add(LoadCart());
+
     return BlocConsumer<TableNumberBloc, TableNumberState>(
         listener: (context, state) {
       if (state is TableNumberValid) {
@@ -185,19 +187,34 @@ class KeranjangPage extends StatelessWidget {
                             itemBuilder: (context, index) {
                               final item = cartItems[index];
 
+                              // Check if seller is active from sellerInfo
+                              final bool isSellerActive =
+                                  item.product?.sellerInfo?.isActive ??
+                                      (item.product?.seller?.isActive == 1
+                                          ? true
+                                          : false);
+
                               return KeranjangCard(
                                 imageUrl: item.product?.image ?? '',
                                 title: item.product?.name ??
                                     'Produk Tidak Diketahui',
                                 price: item.product?.price ?? 0.0,
                                 initialQuantity: item.quantity,
+                                isSellerActive: isSellerActive,
+                                // Pass seller active status
                                 onAdd: () {
-                                  context.read<CartBloc>().add(UpdateCartItem(
-                                      item.id, item.quantity + 1));
+                                  // Only allow add if seller is active
+                                  if (isSellerActive != false) {
+                                    context.read<CartBloc>().add(UpdateCartItem(
+                                        item.id, item.quantity + 1));
+                                  }
                                 },
                                 onRemove: () {
-                                  context.read<CartBloc>().add(UpdateCartItem(
-                                      item.id, item.quantity - 1));
+                                  // Only allow remove if seller is active
+                                  if (isSellerActive != false) {
+                                    context.read<CartBloc>().add(UpdateCartItem(
+                                        item.id, item.quantity - 1));
+                                  }
                                 },
                                 productId: item.id,
                                 onDelete: () {
@@ -240,9 +257,14 @@ class KeranjangPage extends StatelessWidget {
             BlocBuilder<CartBloc, CartState>(
               builder: (context, state) {
                 String totalPrice = '0';
+                bool hasInactiveSeller = false;
 
                 if (state is CartLoaded) {
                   totalPrice = state.totalPrice;
+
+                  // Cek apakah ada seller tidak aktif
+                  hasInactiveSeller = state.items.any(
+                      (item) => item.product?.sellerInfo?.isActive == false);
                 }
 
                 if (totalPrice.isEmpty || totalPrice == '0') {
@@ -284,11 +306,24 @@ class KeranjangPage extends StatelessWidget {
                       ),
                       GestureDetector(
                         onTap: () {
+                          if (hasInactiveSeller) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text(
+                                  'Tidak bisa lanjut, ada penjual yang sedang tidak aktif.',
+                                ),
+                                backgroundColor: Colors.orange,
+                              ),
+                            );
+                            return;
+                          }
+
                           if (_tableNumberController.text.isEmpty) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text(
-                                    'Silakan isi nomor meja terlebih dahulu'),
+                                  'Silakan isi nomor meja terlebih dahulu',
+                                ),
                               ),
                             );
                             return;

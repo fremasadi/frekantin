@@ -31,8 +31,8 @@ class Welcome {
 class Order {
   int id;
   String orderId;
-  int customerId;
-  int sellerId;
+  String customerId;
+  String sellerId;
   String orderStatus;
   String totalAmount;
   String tableNumber;
@@ -70,23 +70,7 @@ class Order {
         updatedAt: DateTime.parse(json["updated_at"]),
         orderItems: List<OrderItem>.from(
             json["order_items"].map((x) => OrderItem.fromJson(x))),
-        payment: json["payment"] != null
-            ? Payment.fromJson(json["payment"])
-            : Payment(
-                id: 0,
-                orderId: json["id"],
-                paymentStatus: '',
-                paymentType: '',
-                paymentGateway: '',
-                paymentGatewayReferenceId: '',
-                paymentGatewayResponse: '',
-                paymentVaName: '',
-                paymentVaNumber: '',
-                grossAmount: '',
-                paymentDate: DateTime.now(),
-                expiredAt: DateTime.now(),
-                createdAt: DateTime.now(),
-                updatedAt: DateTime.now()),
+        payment: Payment.fromJson(json["payment"]),
       );
 
   Map<String, dynamic> toJson() => {
@@ -107,8 +91,8 @@ class Order {
 
 class OrderItem {
   int id;
-  int orderId;
-  int productId;
+  String orderId;
+  String productId; // Changed from int to String to match the API response
   int quantity;
   String price;
   String notes;
@@ -132,7 +116,8 @@ class OrderItem {
         id: json["id"],
         orderId: json["order_id"],
         productId: json["product_id"],
-        quantity: json["quantity"],
+        quantity: int.parse(json["quantity"]),
+        // Convert string to int
         price: json["price"],
         notes: json["notes"],
         createdAt: DateTime.parse(json["created_at"]),
@@ -144,7 +129,7 @@ class OrderItem {
         "id": id,
         "order_id": orderId,
         "product_id": productId,
-        "quantity": quantity,
+        "quantity": quantity.toString(), // Convert int to string for API
         "price": price,
         "notes": notes,
         "created_at": createdAt.toIso8601String(),
@@ -155,13 +140,14 @@ class OrderItem {
 
 class Product {
   int id;
-  int sellerId;
-  int categoryId;
+  String sellerId; // Changed from int to String to match the API response
+  String categoryId; // Changed from int to String to match the API response
   String name;
   String description;
   String price;
   String image;
-  int stock;
+  String stock; // Changed from int to String to match the API response
+  int isActive; // Added this field from the API response
   DateTime createdAt;
   DateTime updatedAt;
 
@@ -174,6 +160,7 @@ class Product {
     required this.price,
     required this.image,
     required this.stock,
+    required this.isActive, // Added to constructor
     required this.createdAt,
     required this.updatedAt,
   });
@@ -187,6 +174,8 @@ class Product {
         price: json["price"],
         image: json["image"],
         stock: json["stock"],
+        isActive: int.parse(json["is_active"] ?? "0"),
+        // Added with fallback
         createdAt: DateTime.parse(json["created_at"]),
         updatedAt: DateTime.parse(json["updated_at"]),
       );
@@ -200,6 +189,7 @@ class Product {
         "price": price,
         "image": image,
         "stock": stock,
+        "is_active": isActive.toString(), // Convert to string for API
         "created_at": createdAt.toIso8601String(),
         "updated_at": updatedAt.toIso8601String(),
       };
@@ -207,7 +197,7 @@ class Product {
 
 class Payment {
   int id;
-  int orderId;
+  String orderId; // Changed from int to String to match the API response
   String paymentStatus;
   String paymentType;
   String paymentGateway;
@@ -233,9 +223,9 @@ class Payment {
     required this.paymentGatewayResponse,
     required this.paymentVaName,
     required this.paymentVaNumber,
-    this.paymentEwallet = '',
+    this.paymentEwallet,
     required this.grossAmount,
-    this.paymentProof = '',
+    this.paymentProof,
     required this.paymentDate,
     required this.expiredAt,
     required this.createdAt,
@@ -243,18 +233,18 @@ class Payment {
   });
 
   factory Payment.fromJson(Map<String, dynamic> json) => Payment(
-        id: json["id"] ?? 0,
-        orderId: json["order_id"] ?? 0,
-        paymentStatus: json["payment_status"] ?? '',
-        paymentType: json["payment_type"] ?? '',
-        paymentGateway: json["payment_gateway"] ?? '',
-        paymentGatewayReferenceId: json["payment_gateway_reference_id"] ?? '',
-        paymentGatewayResponse: json["payment_gateway_response"] ?? '',
-        paymentVaName: json["payment_va_name"] ?? '',
-        paymentVaNumber: json["payment_va_number"] ?? '',
-        paymentEwallet: json["payment_ewallet"] ?? '',
-        grossAmount: json["gross_amount"] ?? '',
-        paymentProof: json["payment_proof"] ?? '',
+        id: json["id"],
+        orderId: json["order_id"],
+        paymentStatus: json["payment_status"],
+        paymentType: json["payment_type"],
+        paymentGateway: json["payment_gateway"],
+        paymentGatewayReferenceId: json["payment_gateway_reference_id"],
+        paymentGatewayResponse: json["payment_gateway_response"],
+        paymentVaName: json["payment_va_name"],
+        paymentVaNumber: json["payment_va_number"],
+        paymentEwallet: json["payment_ewallet"],
+        grossAmount: json["gross_amount"],
+        paymentProof: json["payment_proof"],
         paymentDate: json["payment_date"] != null
             ? DateTime.parse(json["payment_date"])
             : DateTime.now(),

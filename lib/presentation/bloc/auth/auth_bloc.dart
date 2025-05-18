@@ -13,7 +13,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         final token = await authRepository.login(event.email, event.password);
         emit(AuthSuccess(token!));
       } catch (e) {
-        emit(AuthFailure('Login failed. Please try again.'));
+        emit(AuthFailure('Mohon Cek Email dan Password Anda'));
       }
     });
     on<LogoutRequested>((event, emit) async {

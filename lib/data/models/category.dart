@@ -2,14 +2,38 @@ class Category {
   final int id;
   final String name;
   final String? imageUrl;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
 
-  Category({required this.id, required this.name, this.imageUrl});
+  Category({
+    required this.id,
+    required this.name,
+    this.imageUrl,
+    this.createdAt,
+    this.updatedAt,
+  });
 
   factory Category.fromJson(Map<String, dynamic> json) {
     return Category(
-      id: json['id'],
+      id: json['id'] is String ? int.parse(json['id']) : json['id'],
       name: json['name'],
-      imageUrl: json['image'], // Sesuaikan dengan key dari API kamu
+      imageUrl: json['image'],
+      createdAt: json['created_at'] != null
+          ? DateTime.parse(json['created_at'])
+          : null,
+      updatedAt: json['updated_at'] != null
+          ? DateTime.parse(json['updated_at'])
+          : null,
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'image': imageUrl,
+      'created_at': createdAt?.toIso8601String(),
+      'updated_at': updatedAt?.toIso8601String(),
+    };
   }
 }

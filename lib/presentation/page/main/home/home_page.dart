@@ -11,6 +11,7 @@ import 'package:shimmer/shimmer.dart';
 
 import '../../../../data/repository/review_repository.dart';
 import '../../../bloc/category/category_bloc.dart';
+import '../../../bloc/category/category_state.dart';
 import '../../../bloc/category/categoty_event.dart';
 import '../../../bloc/content/content_bloc.dart';
 import '../../../bloc/product/product_bloc.dart';
@@ -43,6 +44,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    context.read<ProductBloc>().fetchProducts();
+
     return Scaffold(body: BlocBuilder<CategoryBloc, CategoryState>(
         builder: (context, categoryState) {
       return BlocBuilder<ProductBloc, ProductState>(
@@ -51,124 +54,148 @@ class _HomePageState extends State<HomePage> {
             productState is ProductLoading) {
           return homeLoadingWidget(context);
         }
-        return CustomScrollView(
-          slivers: [
-            _buildAppBar(),
-            SliverToBoxAdapter(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  BlocBuilder<CategoryBloc, CategoryState>(
-                    builder: (context, state) {
-                      if (state is CategoryLoaded) {
-                        return Column(
-                          children: [
-                            _buildSectionHeader(
-                              'Kategori',
-                              'Lihat Semua',
-                              () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => KategoryPage(
-                                              categories: state.categories,
-                                            )));
-                              },
-                            ),
-                            SizedBox(
-                              height: 16.h,
-                            ),
-                            SizedBox(
-                              height: 100.h,
-                              child: ListView.builder(
-                                shrinkWrap: true,
-                                padding: EdgeInsets.zero,
-                                scrollDirection: Axis.horizontal,
-                                itemCount: state.categories.length,
-                                itemBuilder: (context, index) {
-                                  final category = state.categories[index];
-                                  return GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  DetailProductKategory(
-                                                    categoryId:
-                                                        category.id.toString(),
-                                                    categoryName: category.name,
-                                                  )));
-                                    },
-                                    child: CategoryCard(
-                                        image: category.imageUrl!,
-                                        category: category.name),
-                                  );
+        return RefreshIndicator(
+          backgroundColor: AppColors.primary,
+          onRefresh: () async {
+            context.read<CategoryBloc>().add(FetchCategories());
+            context.read<ProductBloc>().fetchProducts();
+          },
+          child: CustomScrollView(
+            slivers: [
+              _buildAppBar(),
+              SliverToBoxAdapter(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    BlocBuilder<CategoryBloc, CategoryState>(
+                      builder: (context, state) {
+                        if (state is CategoryLoaded) {
+                          return Column(
+                            children: [
+                              _buildSectionHeader(
+                                'Kategori',
+                                'Lihat Semua',
+                                () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => KategoryPage(
+                                                categories: state.categories,
+                                              )));
                                 },
                               ),
-                            ),
-                          ],
-                        );
-                      } else if (state is CategoryError) {
-                        return Center(child: Text('Error: ${state.message}'));
-                      }
-                      return const Center(
-                          child: Text('No categories available'));
-                    },
-                  ),
-                  Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0.sp),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Rekomendasi enak buat kamu',
-                          style: TextStyle(
-                              fontSize: 14.sp, fontFamily: 'SemiBold'),
-                        ),
-                      ],
-                    ),
-                  ),
-                  BlocBuilder<ProductBloc, ProductState>(
-                    builder: (context, state) {
-                      if (state is ProductLoaded) {
-                        return ListView.builder(
-                          shrinkWrap: true,
-                          padding: EdgeInsets.zero,
-                          itemCount: state.products.length,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemBuilder: (context, index) {
-                            final product = state.products[index];
-                            return BlocProvider(
-                              create: (context) => ReviewBloc(
-                                repository: ReviewRepository(),
-                                productId: product.id,
-                              )..add(FetchAverageRating(product.id)),
-                              child: GestureDetector(
-                                onTap: () {
-                                  showModalBottomSheet(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return DetailProdukPage(product: product);
-                                    },
-                                  );
-                                },
-                                child: ProductCard(
-                                  product: product,
+                              SizedBox(
+                                height: 16.h,
+                              ),
+                              SizedBox(
+                                height: 100.h,
+                                child: ListView.builder(
+                                  shrinkWrap: true,
+                                  padding: EdgeInsets.zero,
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: state.categories.length,
+                                  itemBuilder: (context, index) {
+                                    final category = state.categories[index];
+                                    return GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    DetailProductKategory(
+                                                      categoryId: category.id
+                                                          .toString(),
+                                                      categoryName:
+                                                          category.name,
+                                                    )));
+                                      },
+                                      child: CategoryCard(
+                                          image: category.imageUrl!,
+                                          category: category.name),
+                                    );
+                                  },
                                 ),
                               ),
-                            );
-                          },
-                        );
-                      } else if (state is ProductError) {
-                        return Text('Error: ${state.message}');
-                      }
-                      return Container();
-                    },
-                  )
-                ],
+                            ],
+                          );
+                        } else if (state is CategoryError) {
+                          return Center(child: Text('Error: ${state.message}'));
+                        }
+                        return const Center(
+                            child: Text('No categories available'));
+                      },
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 16.0.sp),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Rekomendasi enak buat kamu',
+                            style: TextStyle(
+                                fontSize: 14.sp, fontFamily: 'SemiBold'),
+                          ),
+                        ],
+                      ),
+                    ),
+                    BlocBuilder<ProductBloc, ProductState>(
+                      builder: (context, state) {
+                        if (state is ProductLoaded) {
+                          return ListView.builder(
+                            shrinkWrap: true,
+                            padding: EdgeInsets.zero,
+                            itemCount: state.products.length,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemBuilder: (context, index) {
+                              final product = state.products[index];
+                              final bool isSellerActive =
+                                  product.seller?.isActive == 1;
+
+                              return BlocProvider(
+                                create: (context) => ReviewBloc(
+                                  repository: ReviewRepository(),
+                                  productId: product.id,
+                                )..add(FetchAverageRating(product.id)),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    if (isSellerActive) {
+                                      showModalBottomSheet(
+                                        context: context,
+                                        builder: (BuildContext context) {
+                                          return DetailProdukPage(
+                                              product: product);
+                                        },
+                                      );
+                                    } else {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                              'Penjual tidak aktif untuk saat ini.'),
+                                          duration: Duration(seconds: 2),
+                                          behavior: SnackBarBehavior.floating,
+                                        ),
+                                      );
+                                    }
+                                  },
+                                  child: ProductCard(
+                                    product: product,
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        } else if (state is ProductError) {
+                          return Text('Error: ${state.message}');
+                        }
+                        return Container();
+                      },
+                    )
+                  ],
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         );
       });
     }));

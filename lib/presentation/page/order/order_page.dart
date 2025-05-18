@@ -449,7 +449,8 @@ class _OrderPageState extends State<OrderPage> {
                       if (_selectedPaymentMethod.isEmpty) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                              content: Text('Please select a payment method')),
+                              content:
+                                  Text('Tolong Pilih Metode Pembayaran Anda')),
                         );
                         return;
                       }

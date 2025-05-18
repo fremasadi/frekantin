@@ -161,6 +161,8 @@ class _DetailProductKategoryState extends State<DetailProductKategory> {
                         padding: EdgeInsets.zero,
                         itemBuilder: (context, index) {
                           final product = products[index];
+                          bool isSellerActive = product.seller?.isActive == 1;
+
                           return BlocProvider(
                             create: (context) => ReviewBloc(
                               repository: ReviewRepository(),
@@ -173,14 +175,42 @@ class _DetailProductKategoryState extends State<DetailProductKategory> {
                                 children: [
                                   Stack(
                                     children: [
-                                      ClipRRect(
-                                        borderRadius:
-                                            BorderRadius.circular(8.0),
-                                        child: Image.network(
-                                          product.image,
-                                          height: 90.h,
-                                          width: 90.w,
-                                          fit: BoxFit.cover,
+                                      ColorFiltered(
+                                        colorFilter: isSellerActive
+                                            ? const ColorFilter.mode(
+                                                Colors.transparent,
+                                                BlendMode.multiply)
+                                            : const ColorFilter.matrix(<double>[
+                                                0.2126,
+                                                0.7152,
+                                                0.0722,
+                                                0,
+                                                0,
+                                                0.2126,
+                                                0.7152,
+                                                0.0722,
+                                                0,
+                                                0,
+                                                0.2126,
+                                                0.7152,
+                                                0.0722,
+                                                0,
+                                                0,
+                                                0,
+                                                0,
+                                                0,
+                                                1,
+                                                0,
+                                              ]),
+                                        child: ClipRRect(
+                                          borderRadius:
+                                              BorderRadius.circular(8.0),
+                                          child: Image.network(
+                                            product.image,
+                                            height: 90.h,
+                                            width: 90.w,
+                                            fit: BoxFit.cover,
+                                          ),
                                         ),
                                       ),
                                       Positioned(
@@ -239,35 +269,47 @@ class _DetailProductKategoryState extends State<DetailProductKategory> {
                                           ),
                                         ),
                                         SizedBox(height: 4.0.h),
-                                        GestureDetector(
-                                          onTap: () {
-                                            showModalBottomSheet(
-                                              context: context,
-                                              builder: (BuildContext context) {
-                                                return DetailProdukPage(
-                                                    product: product);
-                                              },
-                                            );
-                                          },
-                                          child: Container(
-                                            padding: EdgeInsets.symmetric(
-                                                vertical: 4.5.sp,
-                                                horizontal: 12.sp),
-                                            decoration: BoxDecoration(
-                                              color: Colors.redAccent,
-                                              borderRadius:
-                                                  BorderRadius.circular(16.sp),
-                                            ),
-                                            child: Text(
-                                              'Tambah',
-                                              style: TextStyle(
-                                                fontSize: 10.sp,
-                                                fontFamily: 'SemiBold',
-                                                color: AppColors.white,
+                                        if (isSellerActive)
+                                          GestureDetector(
+                                            onTap: () {
+                                              showModalBottomSheet(
+                                                context: context,
+                                                builder:
+                                                    (BuildContext context) {
+                                                  return DetailProdukPage(
+                                                      product: product);
+                                                },
+                                              );
+                                            },
+                                            child: Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  vertical: 4.5.sp,
+                                                  horizontal: 12.sp),
+                                              decoration: BoxDecoration(
+                                                color: Colors.redAccent,
+                                                borderRadius:
+                                                    BorderRadius.circular(
+                                                        16.sp),
+                                              ),
+                                              child: Text(
+                                                'Tambah',
+                                                style: TextStyle(
+                                                  fontSize: 10.sp,
+                                                  fontFamily: 'SemiBold',
+                                                  color: AppColors.white,
+                                                ),
                                               ),
                                             ),
                                           ),
-                                        ),
+                                        if (!isSellerActive)
+                                          Text(
+                                            'Toko Sedang Tutup',
+                                            style: TextStyle(
+                                              fontSize: 12.sp,
+                                              fontFamily: 'SemiBold',
+                                              color: Colors.red,
+                                            ),
+                                          )
                                       ],
                                     ),
                                   ),
