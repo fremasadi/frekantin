@@ -18,7 +18,9 @@ import 'package:e_kantin/presentation/bloc/productbycategory/product_by_category
 import 'package:e_kantin/presentation/bloc/review/review_bloc.dart';
 import 'package:e_kantin/presentation/bloc/search_product/search_product_bloc.dart';
 import 'package:e_kantin/presentation/bloc/table_number/table_number_bloc.dart';
+import 'package:e_kantin/presentation/bloc/user/edit_password_bloc.dart';
 import 'package:e_kantin/presentation/bloc/user/user_bloc.dart';
+import 'package:e_kantin/presentation/page/main/profile/edit_password_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,6 +29,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'core/router/app_router.dart';
 import 'data/repository/cart_repository.dart';
 import 'data/repository/content_repository.dart';
+import 'data/repository/edit_password_repository.dart';
 import 'data/repository/product_repository.dart';
 import 'data/repository/review_repository.dart';
 import 'data/service/notification_service.dart';
@@ -137,6 +140,11 @@ class MyApp extends StatelessWidget {
               BlocProvider(
                 create: (context) =>
                     SearchProductBloc(productRepository: ProductRepository()),
+              ),
+              BlocProvider(
+                create: (context) =>
+                    EditPasswordBloc(repository: EditPasswordRepository()),
+                child: const EditPasswordPage(),
               ),
               BlocProvider(
                 create: (context) =>

@@ -8,7 +8,7 @@ class Product {
   final String name;
   final String description;
   final double price;
-  final String image;
+  final String? image; // Dapat null
   final int stock;
   final int isActive;
   final DateTime createdAt;
@@ -23,7 +23,7 @@ class Product {
     required this.name,
     required this.description,
     required this.price,
-    required this.image,
+    this.image, // Dapat null
     required this.stock,
     required this.isActive,
     required this.createdAt,
@@ -41,18 +41,25 @@ class Product {
       categoryId: json['category_id'] is String
           ? int.parse(json['category_id'])
           : json['category_id'],
-      name: json['name'],
-      description: json['description'],
-      price: double.parse(json['price'].toString()),
+      name: json['name'] ?? '',
+      // Fallback ke empty string jika null
+      description: json['description'] ?? '',
+      // Fallback ke empty string jika null
+      price: double.parse((json['price'] ?? '0').toString()),
       image: json['image'],
-      stock: json['stock'] is String ? int.parse(json['stock']) : json['stock'],
+      // Biarkan null jika null
+      stock: json['stock'] is String
+          ? int.parse(json['stock'])
+          : (json['stock'] ?? 0),
       isActive: json['is_active'] is String
           ? int.parse(json['is_active'])
           : json['is_active'] ?? 1,
-      createdAt: DateTime.parse(json['created_at']),
-      updatedAt: DateTime.parse(json['updated_at']),
+      createdAt: DateTime.parse(
+          json['created_at'] ?? DateTime.now().toIso8601String()),
+      updatedAt: DateTime.parse(
+          json['updated_at'] ?? DateTime.now().toIso8601String()),
       seller: json['seller'] != null ? Seller.fromJson(json['seller']) : null,
-      category: Category.fromJson(json['category']),
+      category: Category.fromJson(json['category'] ?? {}),
     );
   }
 

@@ -56,14 +56,14 @@ class _DetailProductKategoryState extends State<DetailProductKategory> {
                   color: Colors.white,
                   boxShadow: _isScrolling
                       ? [
-                          BoxShadow(
-                            color: Colors.grey.withAlpha(
-                                (255 * 0.2).toInt()), // Menghitung alpha
-                            spreadRadius: 0,
-                            blurRadius: 6,
-                            offset: const Offset(0, 4),
-                          ),
-                        ]
+                    BoxShadow(
+                      color: Colors.grey.withAlpha(
+                          (255 * 0.2).toInt()), // Menghitung alpha
+                      spreadRadius: 0,
+                      blurRadius: 6,
+                      offset: const Offset(0, 4),
+                    ),
+                  ]
                       : null,
                 ),
                 child: Column(
@@ -132,7 +132,7 @@ class _DetailProductKategoryState extends State<DetailProductKategory> {
               // BlocBuilder for Products
               Expanded(
                 child:
-                    BlocBuilder<ProductByCategoryBloc, ProductByCategoryState>(
+                BlocBuilder<ProductByCategoryBloc, ProductByCategoryState>(
                   builder: (context, state) {
                     if (state is ProductByCategoryLoading) {
                       return loadingPlaceholder();
@@ -164,10 +164,12 @@ class _DetailProductKategoryState extends State<DetailProductKategory> {
                           bool isSellerActive = product.seller?.isActive == 1;
 
                           return BlocProvider(
-                            create: (context) => ReviewBloc(
+                            create: (context) =>
+                            ReviewBloc(
                               repository: ReviewRepository(),
                               productId: product.id,
-                            )..add(FetchAverageRating(product.id)),
+                            )
+                              ..add(FetchAverageRating(product.id)),
                             child: Padding(
                               padding: const EdgeInsets.all(16.0),
                               child: Row(
@@ -178,35 +180,35 @@ class _DetailProductKategoryState extends State<DetailProductKategory> {
                                       ColorFiltered(
                                         colorFilter: isSellerActive
                                             ? const ColorFilter.mode(
-                                                Colors.transparent,
-                                                BlendMode.multiply)
+                                            Colors.transparent,
+                                            BlendMode.multiply)
                                             : const ColorFilter.matrix(<double>[
-                                                0.2126,
-                                                0.7152,
-                                                0.0722,
-                                                0,
-                                                0,
-                                                0.2126,
-                                                0.7152,
-                                                0.0722,
-                                                0,
-                                                0,
-                                                0.2126,
-                                                0.7152,
-                                                0.0722,
-                                                0,
-                                                0,
-                                                0,
-                                                0,
-                                                0,
-                                                1,
-                                                0,
-                                              ]),
+                                          0.2126,
+                                          0.7152,
+                                          0.0722,
+                                          0,
+                                          0,
+                                          0.2126,
+                                          0.7152,
+                                          0.0722,
+                                          0,
+                                          0,
+                                          0.2126,
+                                          0.7152,
+                                          0.0722,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          0,
+                                          1,
+                                          0,
+                                        ]),
                                         child: ClipRRect(
                                           borderRadius:
-                                              BorderRadius.circular(8.0),
+                                          BorderRadius.circular(8.0),
                                           child: Image.network(
-                                            product.image,
+                                            product.image!,
                                             height: 90.h,
                                             width: 90.w,
                                             fit: BoxFit.cover,
@@ -224,7 +226,7 @@ class _DetailProductKategoryState extends State<DetailProductKategory> {
                                                   reviewState.rating
                                                       .toString());
                                             } else if (reviewState
-                                                is ReviewLoading) {
+                                            is ReviewLoading) {
                                               return _buildRatingContainer(
                                                   '-'); // Placeholder saat loading
                                             } else {
@@ -240,10 +242,11 @@ class _DetailProductKategoryState extends State<DetailProductKategory> {
                                   Expanded(
                                     child: Column(
                                       crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                      CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          '${product.name}, ${product.seller!.name}',
+                                          '${product.name}, ${product.seller!
+                                              .name}',
                                           style: TextStyle(
                                             fontSize: 14.0.sp,
                                             fontWeight: FontWeight.bold,
@@ -288,8 +291,8 @@ class _DetailProductKategoryState extends State<DetailProductKategory> {
                                               decoration: BoxDecoration(
                                                 color: Colors.redAccent,
                                                 borderRadius:
-                                                    BorderRadius.circular(
-                                                        16.sp),
+                                                BorderRadius.circular(
+                                                    16.sp),
                                               ),
                                               child: Text(
                                                 'Tambah',
@@ -340,51 +343,52 @@ class _DetailProductKategoryState extends State<DetailProductKategory> {
       child: ListView.builder(
         padding: EdgeInsets.zero,
         itemCount: 5,
-        itemBuilder: (context, index) => Container(
-          margin: const EdgeInsets.all(8.0),
-          padding: const EdgeInsets.all(12.0),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(8.0),
-          ),
-          child: Row(
-            children: [
-              Container(
-                height: 80,
-                width: 80,
-                decoration: BoxDecoration(
-                  color: Colors.grey,
-                  borderRadius: BorderRadius.circular(8.0),
-                ),
+        itemBuilder: (context, index) =>
+            Container(
+              margin: const EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(12.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8.0),
               ),
-              const SizedBox(width: 12.0),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      height: 16.0,
-                      width: double.infinity,
+              child: Row(
+                children: [
+                  Container(
+                    height: 80,
+                    width: 80,
+                    decoration: BoxDecoration(
                       color: Colors.grey,
+                      borderRadius: BorderRadius.circular(8.0),
                     ),
-                    const SizedBox(height: 8.0),
-                    Container(
-                      height: 12.0,
-                      width: 150.0,
-                      color: Colors.grey,
+                  ),
+                  const SizedBox(width: 12.0),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Container(
+                          height: 16.0,
+                          width: double.infinity,
+                          color: Colors.grey,
+                        ),
+                        const SizedBox(height: 8.0),
+                        Container(
+                          height: 12.0,
+                          width: 150.0,
+                          color: Colors.grey,
+                        ),
+                        const SizedBox(height: 8.0),
+                        Container(
+                          height: 12.0,
+                          width: 100.0,
+                          color: Colors.grey,
+                        ),
+                      ],
                     ),
-                    const SizedBox(height: 8.0),
-                    Container(
-                      height: 12.0,
-                      width: 100.0,
-                      color: Colors.grey,
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          ),
-        ),
+            ),
       ),
     );
   }

@@ -29,7 +29,10 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
 
   late Timer _timer;
   int _remainingSeconds = 3600; // 1 jam
-  late String currentStatus;
+
+  // Inisialisasi currentStatus dengan order status yang ada
+  // ini adalah solusi untuk menghindari LateInitializationError
+  String currentStatus = 'PENDING'; // Default ke PENDING
 
   void startCountdown() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -52,6 +55,9 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
   @override
   void initState() {
     super.initState();
+    // Inisialisasi currentStatus dengan status order saat ini
+    currentStatus = widget.order.orderStatus;
+
     final payment = widget.order.payment;
 
     final paymentGatewayResponse = payment.paymentGatewayResponse;

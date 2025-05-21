@@ -1,5 +1,7 @@
 import 'package:e_kantin/core/constant/colors.dart';
 import 'package:e_kantin/core/router/app_router.dart';
+import 'package:e_kantin/presentation/page/main/profile/edit_password_page.dart';
+import 'package:e_kantin/presentation/page/main/profile/editprofile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
@@ -54,9 +56,11 @@ class ProfilePage extends StatelessWidget {
                         children: [
                           CircleAvatar(
                             radius: 30.sp,
-                            backgroundImage: NetworkImage(
-                              user.image, // Pastikan URL benar
-                            ),
+                            backgroundImage: user.safeImage.isNotEmpty
+                                ? NetworkImage(user.safeImage)
+                                : const AssetImage(
+                                        'assets/images/img_profile.jpg')
+                                    as ImageProvider,
                           ),
                           SizedBox(
                             width: 12.sp,
@@ -92,6 +96,20 @@ class ProfilePage extends StatelessWidget {
                       return const SizedBox();
                     }
                   },
+                ),
+                const Spacer(),
+                IconButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const EditProfilePage()));
+                  },
+                  icon: Icon(
+                    Icons.edit,
+                    color: Colors.blue,
+                    size: 24.sp,
+                  ),
                 )
               ],
             ),
@@ -105,8 +123,15 @@ class ProfilePage extends StatelessWidget {
                 style: TextStyle(fontSize: 12.sp, fontFamily: 'Medium'),
               ),
             ),
-            _buildRow('assets/icons/ic_editsecure.png', 'Keamanan'),
-            _buildRow('assets/icons/ic_notification.png', 'Notification'),
+            GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const EditPasswordPage()));
+                },
+                child: _buildRow('assets/icons/ic_editsecure.png', 'Keamanan')),
+            // _buildRow('assets/icons/ic_notification.png', 'Notification'),
             BlocListener<AuthBloc, AuthState>(
               listener: (context, state) {
                 if (state is LogoutSuccess) {

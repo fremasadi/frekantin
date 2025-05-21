@@ -23,6 +23,42 @@ class _HistoryPageState extends State<HistoryPage> {
   // Menyimpan status expanded per order item
   Map<int, bool> expandedItems = {};
 
+  // Filter status
+  String _selectedStatus = "SEMUA"; // Default filter status
+  final List<String> _statusOptions = [
+    "SEMUA",
+    "TERTUNDA",
+    "DIBAYAR",
+    "SELESAI",
+    "BATAL"
+  ];
+
+  // Filter orders berdasarkan status yang dipilih
+  List<Order> _filterOrders(List<Order> orders) {
+    if (_selectedStatus == "SEMUA") {
+      return orders;
+    }
+
+    String statusFilter = _getStatusCode(_selectedStatus);
+    return orders.where((order) => order.orderStatus == statusFilter).toList();
+  }
+
+  // Konversi status display ke kode status backend
+  String _getStatusCode(String displayStatus) {
+    switch (displayStatus) {
+      case "TERTUNDA":
+        return "PENDING";
+      case "DIBAYAR":
+        return "PAID";
+      case "SELESAI":
+        return "COMPLETED";
+      case "BATAL":
+        return "CANCELLED";
+      default:
+        return "";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -51,7 +87,7 @@ class _HistoryPageState extends State<HistoryPage> {
                   width: 12.w,
                 ),
                 Text(
-                  'Riwayat',
+                  'Riwayat Pembelian',
                   style: TextStyle(
                     fontSize: 16.sp,
                     fontFamily: 'SemiBold',
@@ -59,6 +95,54 @@ class _HistoryPageState extends State<HistoryPage> {
                 ),
               ],
             ),
+
+            // Filter Status Section
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+              child: SizedBox(
+                height: 40.h,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: _statusOptions.length,
+                  itemBuilder: (context, index) {
+                    final status = _statusOptions[index];
+                    final isSelected = status == _selectedStatus;
+
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedStatus = status;
+                        });
+                      },
+                      child: Container(
+                        margin: EdgeInsets.only(right: 8.w),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: 16.w, vertical: 8.h),
+                        decoration: BoxDecoration(
+                          color: isSelected ? AppColors.primary : Colors.white,
+                          borderRadius: BorderRadius.circular(20.r),
+                          border: Border.all(
+                            color: isSelected
+                                ? AppColors.primary
+                                : AppColors.greyLoading,
+                          ),
+                        ),
+                        child: Text(
+                          status,
+                          style: TextStyle(
+                            color:
+                                isSelected ? Colors.white : AppColors.greyPrice,
+                            fontSize: 12.sp,
+                            fontFamily: 'Medium',
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+
             Expanded(
               child: BlocBuilder<OrderBloc, OrderState>(
                 builder: (context, state) {
@@ -67,11 +151,37 @@ class _HistoryPageState extends State<HistoryPage> {
                       child: CircularProgressIndicator(),
                     );
                   } else if (state is OrdersLoaded) {
+                    final filteredOrders = _filterOrders(state.orders);
+
+                    if (filteredOrders.isEmpty) {
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.receipt_long,
+                              size: 64.sp,
+                              color: AppColors.greyPrice,
+                            ),
+                            SizedBox(height: 16.h),
+                            Text(
+                              'Tidak ada riwayat $_selectedStatus',
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                fontFamily: 'Medium',
+                                color: AppColors.greyPrice,
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }
+
                     return ListView.builder(
                       padding: EdgeInsets.symmetric(horizontal: 12.w),
-                      itemCount: state.orders.length,
+                      itemCount: filteredOrders.length,
                       itemBuilder: (context, index) {
-                        final order = state.orders[index];
+                        final order = filteredOrders[index];
                         return orderHistory(order, index);
                       },
                     );

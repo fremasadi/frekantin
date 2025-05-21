@@ -191,7 +191,7 @@ class _SearchPageState extends State<SearchPage> {
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(8.0),
                                       child: Image.network(
-                                        product.image,
+                                        product.image!,
                                         height: 100.h,
                                         width: 100.w,
                                         fit: BoxFit.cover,
