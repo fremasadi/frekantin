@@ -17,6 +17,7 @@ class PaymentPage extends StatefulWidget {
     super.key,
     required this.response,
   });
+
   final Map<String, dynamic> response;
 
   @override
@@ -33,7 +34,8 @@ class _PaymentPageState extends State<PaymentPage> {
 
   void startCountdown() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (mounted) {  // Check if widget is still mounted
+      if (mounted) {
+        // Check if widget is still mounted
         setState(() {
           if (_remainingSeconds > 0) {
             _remainingSeconds--;
@@ -54,9 +56,26 @@ class _PaymentPageState extends State<PaymentPage> {
   @override
   void initState() {
     super.initState();
-    paymentData = Map<String, dynamic>.from(widget.response['order']);
 
+    final orders = widget.response['orders'];
     final payment = widget.response['payment'];
+
+    if (orders == null || payment == null) {
+      throw Exception('Data order atau payment tidak ditemukan');
+    }
+
+    final paymentOrderId = payment['order_id'];
+    final foundOrder = orders.firstWhere(
+      (order) => order['id'] == paymentOrderId,
+      orElse: () => null,
+    );
+
+    if (foundOrder == null) {
+      throw Exception('Order terkait dengan payment tidak ditemukan');
+    }
+
+    paymentData = Map<String, dynamic>.from(foundOrder);
+
     final paymentGatewayResponse = payment['payment_gateway_response'];
     final parsedResponse = paymentGatewayResponse is String
         ? jsonDecode(paymentGatewayResponse)
@@ -76,7 +95,8 @@ class _PaymentPageState extends State<PaymentPage> {
 
     // Set up Firebase listener with mounted check
     _firebaseService.listenToOrder(paymentData['order_id'], (updatedOrder) {
-      if (updatedOrder != null && mounted) {  // Check if widget is still mounted
+      if (updatedOrder != null && mounted) {
+        // Check if widget is still mounted
         setState(() {
           paymentData = updatedOrder;
         });
@@ -111,7 +131,8 @@ class _PaymentPageState extends State<PaymentPage> {
                   Text(
                     'Terima kasih sudah melakukan pembayaran',
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 12.sp, color: AppColors.greyPrice),
+                    style:
+                        TextStyle(fontSize: 12.sp, color: AppColors.greyPrice),
                   ),
                   SizedBox(height: 16.h),
                   ElevatedButton(
@@ -331,7 +352,7 @@ class _PaymentPageState extends State<PaymentPage> {
                 width: 8.w,
               ),
               Text(
-                formatCurrency(payment['gross_amount']),
+                formatCurrency(payment['gross_amount'].toString()),
                 style: TextStyle(
                   fontFamily: 'SemiBold',
                   fontSize: 14.sp,

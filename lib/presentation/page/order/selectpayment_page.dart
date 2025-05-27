@@ -17,6 +17,8 @@ class _SelectpaymentPageState extends State<SelectpaymentPage> {
     {'icon': 'assets/icons/ic_bri.png', 'text': 'bri'},
     {'icon': 'assets/icons/ic_bni.png', 'text': 'bni'},
     {'icon': 'assets/icons/ic_mandiri.png', 'text': 'mandiri'},
+    {'icon': 'assets/icons/ic_gopay.png', 'text': 'gopay'}, // Tambahkan ini
+    {'icon': 'assets/icons/ic_qris.png', 'text': 'qris'}, // Tambahkan ini
   ];
 
   @override

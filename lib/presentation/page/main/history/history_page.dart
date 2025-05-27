@@ -33,14 +33,79 @@ class _HistoryPageState extends State<HistoryPage> {
     "BATAL"
   ];
 
+  // Fungsi untuk menggabungkan order dengan order_id yang sama
+  List<Order> _groupOrdersByOrderId(List<Order> orders) {
+    Map<String, List<Order>> groupedOrders = {};
+
+    // Kelompokkan order berdasarkan order_id
+    for (Order order in orders) {
+      if (groupedOrders.containsKey(order.orderId)) {
+        groupedOrders[order.orderId]!.add(order);
+      } else {
+        groupedOrders[order.orderId] = [order];
+      }
+    }
+
+    // Gabungkan order yang memiliki order_id sama
+    List<Order> mergedOrders = [];
+
+    groupedOrders.forEach((orderId, orderList) {
+      if (orderList.length == 1) {
+        // Jika hanya ada satu order dengan order_id ini, tambahkan langsung
+        mergedOrders.add(orderList.first);
+      } else {
+        // Jika ada beberapa order dengan order_id sama, gabungkan
+        Order mergedOrder = _mergeOrders(orderList);
+        mergedOrders.add(mergedOrder);
+      }
+    });
+
+    return mergedOrders;
+  }
+
+  // Fungsi untuk menggabungkan beberapa order menjadi satu
+  Order _mergeOrders(List<Order> orders) {
+    Order baseOrder = orders.first;
+    List<OrderItem> allOrderItems = [];
+    double totalAmount = 0;
+
+    // Gabungkan semua order items dan hitung total amount
+    for (Order order in orders) {
+      allOrderItems.addAll(order.orderItems);
+      totalAmount += double.parse(order.totalAmount);
+    }
+
+    // Buat order baru dengan semua items yang digabungkan
+    return Order(
+      id: baseOrder.id,
+      orderId: baseOrder.orderId,
+      customerId: baseOrder.customerId,
+      sellerId: baseOrder.sellerId,
+      // Menggunakan seller_id dari order pertama
+      orderStatus: baseOrder.orderStatus,
+      totalAmount: totalAmount.toString(),
+      tableNumber: baseOrder.tableNumber,
+      estimatedDeliveryTime: baseOrder.estimatedDeliveryTime,
+      createdAt: baseOrder.createdAt,
+      updatedAt: baseOrder.updatedAt,
+      orderItems: allOrderItems,
+      payment: baseOrder.payment,
+    );
+  }
+
   // Filter orders berdasarkan status yang dipilih
   List<Order> _filterOrders(List<Order> orders) {
+    // Pertama, gabungkan order dengan order_id yang sama
+    List<Order> groupedOrders = _groupOrdersByOrderId(orders);
+
     if (_selectedStatus == "SEMUA") {
-      return orders;
+      return groupedOrders;
     }
 
     String statusFilter = _getStatusCode(_selectedStatus);
-    return orders.where((order) => order.orderStatus == statusFilter).toList();
+    return groupedOrders
+        .where((order) => order.orderStatus == statusFilter)
+        .toList();
   }
 
   // Konversi status display ke kode status backend
@@ -507,7 +572,7 @@ class _HistoryPageState extends State<HistoryPage> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => PaymentHistoryPage(
-                            order: order), // Pass tRhe order to the PaymentPage
+                            order: order), // Pass the order to the PaymentPage
                       ),
                     );
                   },

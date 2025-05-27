@@ -12,6 +12,7 @@ import '../../bloc/cart/cart_state.dart';
 import '../../bloc/order/order_bloc.dart';
 import '../../bloc/table_number/table_number_bloc.dart';
 import '../widgets/keranjang_card.dart';
+import 'QRScannerPage.dart';
 
 class KeranjangPage extends StatelessWidget {
   KeranjangPage({super.key});
@@ -135,45 +136,56 @@ class KeranjangPage extends StatelessWidget {
                     return Column(
                       children: [
                         // Input Nomor Meja
-                        Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(8.0),
-                            boxShadow: [
-                              BoxShadow(
-                                color:
-                                    Colors.black.withAlpha((255 * 0.2).toInt()),
-                                // Menghitung alpha
-                                blurRadius: 1.0,
-                                spreadRadius: 0.0,
-                                offset: const Offset(0, 2),
-                              ),
-                            ],
-                          ),
-                          child: TextFormField(
-                            keyboardType: TextInputType.number,
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
-                            ],
-                            controller: _tableNumberController,
-                            decoration: InputDecoration(
-                              prefixIcon: Padding(
-                                padding: const EdgeInsets.all(12.0),
-                                child: Image.asset(
-                                  'assets/icons/ic_location.png',
-                                  width: 25.w,
-                                  height: 25.h,
+                        GestureDetector(
+                          onTap: () async {
+                            String? scannedResult = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const QRScannerPage()),
+                            );
+                            if (scannedResult != null) {
+                              _tableNumberController.text = scannedResult;
+                            }
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(8.0),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black
+                                      .withAlpha((255 * 0.2).toInt()),
+                                  blurRadius: 1.0,
+                                  spreadRadius: 0.0,
+                                  offset: const Offset(0, 2),
                                 ),
+                              ],
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 16.0, horizontal: 12.0),
+                              child: Row(
+                                children: [
+                                  Image.asset(
+                                    'assets/icons/ic_location.png',
+                                    width: 25.w,
+                                    height: 25.h,
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Text(
+                                    _tableNumberController.text.isEmpty
+                                        ? 'Scan Barcode Meja Anda'
+                                        : _tableNumberController.text,
+                                    style: TextStyle(
+                                      fontSize: 12.sp,
+                                      fontFamily: 'Medium',
+                                      color: _tableNumberController.text.isEmpty
+                                          ? Colors.grey
+                                          : Colors.black,
+                                    ),
+                                  ),
+                                ],
                               ),
-                              hintText: 'Yuk Tuliskan Meja Anda Sekarang',
-                              hintStyle: TextStyle(
-                                fontSize: 12.sp,
-                                fontFamily: 'Medium',
-                                color: Colors.grey,
-                              ),
-                              border: InputBorder.none,
-                              contentPadding:
-                                  const EdgeInsets.symmetric(vertical: 16.0),
                             ),
                           ),
                         ),

@@ -1,5 +1,6 @@
 import 'package:e_kantin/core/constant/colors.dart';
 import 'package:e_kantin/core/util/price_converter.dart';
+import 'package:e_kantin/presentation/page/order/qris_payment_page.dart';
 import 'package:e_kantin/presentation/page/order/selectpayment_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -11,6 +12,8 @@ import '../../bloc/cart/cart_event.dart';
 import '../../bloc/cart/cart_state.dart';
 import '../../bloc/order/order_bloc.dart';
 import '../widgets/checkout_card.dart';
+import 'SnapPaymentPage.dart';
+import 'gopay_payment_page.dart';
 import 'payment_page.dart';
 
 class OrderPage extends StatefulWidget {
@@ -60,20 +63,32 @@ class _OrderPageState extends State<OrderPage> {
             ),
           );
         } else if (state is OrderSuccess) {
-          // Tutup dialog loading
           Navigator.of(context).pop();
 
-          // Navigasi ke PaymentPage
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => PaymentPage(
-                response: state.response,
-              ),
-            ),
-          );
-          // Navigator.pushReplacement(context,
-          //     MaterialPageRoute(builder: (context) => const BasePage()));
+          final payment = state.response['payment'];
+          final paymentType = payment['payment_type'];
+
+          if (paymentType == 'GOPAY') {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      GopayPaymentPage(response: state.response)),
+            );
+          } else if (paymentType == 'QRIS') {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      SnapPaymentPage(response: state.response)),
+            );
+          } else {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => PaymentPage(response: state.response)),
+            );
+          }
         } else if (state is OrderFailure) {
           // Tutup dialog loading
           Navigator.of(context).pop();
@@ -456,10 +471,24 @@ class _OrderPageState extends State<OrderPage> {
                       }
 
                       // Buat OrderRequest
+                      String paymentType;
+                      String? bank;
+
+                      if (_selectedPaymentMethod.toLowerCase() == 'gopay') {
+                        paymentType = 'GOPAY';
+                      } else if (_selectedPaymentMethod.toLowerCase() ==
+                          'qris') {
+                        paymentType = 'QRIS';
+                      } else {
+                        paymentType = 'BANK_TRANSFER';
+                        bank = _selectedPaymentMethod
+                            .toUpperCase(); // contoh: BCA, BNI
+                      }
+
                       final orderRequest = OrderRequest(
                         tableNumber: widget.tableNumber,
-                        paymentType: 'BANK_TRANSFER',
-                        bank: _selectedPaymentMethod,
+                        paymentType: paymentType,
+                        bank: bank,
                       );
 
                       // Tambahkan event ke BLoC

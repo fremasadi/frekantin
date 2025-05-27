@@ -1,48 +1,46 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:e_kantin/core/util/date_coverter.dart';
-import 'package:e_kantin/core/util/price_converter.dart';
-import 'package:e_kantin/presentation/page/main/base_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart'; // Import untuk Clipboard
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../../core/constant/colors.dart';
-import '../../../../data/models/order.dart';
-import '../../../../data/repository/firebase_service.dart';
+import '../../../core/constant/colors.dart';
+import '../../../core/util/date_coverter.dart';
+import '../../../core/util/price_converter.dart';
+import '../../../data/repository/firebase_service.dart';
 
-class PaymentHistoryPage extends StatefulWidget {
-  const PaymentHistoryPage({
+class SnapPaymentPage extends StatefulWidget {
+  const SnapPaymentPage({
     super.key,
-    required this.order,
+    required this.response,
   });
 
-  final Order order;
+  final Map<String, dynamic> response;
 
   @override
-  State<PaymentHistoryPage> createState() => _PaymentHistoryPageState();
+  State<SnapPaymentPage> createState() => _SnapPaymentPageState();
 }
 
-class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
-  final FirebaseService _firebaseService = FirebaseService();
-
+class _SnapPaymentPageState extends State<SnapPaymentPage> {
+  late Map<String, dynamic> payment;
+  late int _remainingSeconds;
   late Timer _timer;
-  int _remainingSeconds = 3600; // 1 jam
-
-  // Inisialisasi currentStatus dengan order status yang ada
-  // ini adalah solusi untuk menghindari LateInitializationError
-  String currentStatus = 'PENDING'; // Default ke PENDING
+  final FirebaseService _firebaseService = FirebaseService();
+  late Map<String, dynamic> paymentData;
+  bool isAlreadyPaid = false;
 
   void startCountdown() {
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
-      setState(() {
-        if (_remainingSeconds > 0) {
-          _remainingSeconds--;
-        } else {
-          _timer.cancel();
-        }
-      });
+      if (mounted) {
+        setState(() {
+          if (_remainingSeconds > 0) {
+            _remainingSeconds--;
+          } else {
+            _timer.cancel();
+          }
+        });
+      }
     });
   }
 
@@ -55,43 +53,32 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
   @override
   void initState() {
     super.initState();
-    // Inisialisasi currentStatus dengan status order saat ini
-    currentStatus = widget.order.orderStatus;
 
-    final payment = widget.order.payment;
+    payment = widget.response['payment'];
+    paymentData = payment; // ✅ inisialisasi awal agar tidak error
 
-    final paymentGatewayResponse = payment?.paymentGatewayResponse;
-    // ignore: unnecessary_type_check
-    final parsedResponse = paymentGatewayResponse is String
-        ? jsonDecode(paymentGatewayResponse)
-        : paymentGatewayResponse;
+    final gatewayResponse = payment['payment_gateway_response'];
+    final parsed = gatewayResponse is String
+        ? jsonDecode(gatewayResponse)
+        : gatewayResponse;
 
-    // Ambil expiry_time
-    final expiryTimeString = parsedResponse['expiry_time'];
-    if (expiryTimeString == null) {
-      throw Exception('expiry_time is missing or null');
-    }
-
-    // Parse expiry_time menjadi DateTime
-    final expiryTime = DateTime.parse(expiryTimeString);
-
-    // Hitung waktu tersisa dalam detik
+    final expiry = DateTime.parse(parsed['expiry_time']).toLocal();
     final now = DateTime.now();
-    _remainingSeconds = expiryTime.difference(now).inSeconds;
-
-    // Pastikan nilai tidak negatif
+    _remainingSeconds = expiry.difference(now).inSeconds;
     _remainingSeconds = _remainingSeconds > 0 ? _remainingSeconds : 0;
 
-    // Mulai countdown
     startCountdown();
-    // Listen ke perubahan status order
-    _firebaseService.listenToOrder(widget.order.orderId, (updatedOrder) {
-      if (updatedOrder != null) {
+
+    // ✅ Pastikan paymentData sudah ada sebelum dipakai
+    _firebaseService.listenToOrder(paymentData['order_id'].toString(),
+        (updatedOrder) {
+      if (updatedOrder != null && mounted) {
         setState(() {
-          currentStatus = updatedOrder['status'];
+          paymentData = updatedOrder;
         });
 
-        if (updatedOrder['status'] == 'PAID') {
+        if (updatedOrder['status'] == 'PAID' && !isAlreadyPaid) {
+          isAlreadyPaid = true;
           showDialog(
             context: context,
             barrierDismissible: false,
@@ -126,10 +113,7 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
                   SizedBox(height: 16.h),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const BasePage()));
+                      Navigator.pop(context);
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
@@ -161,42 +145,34 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
     super.dispose();
   }
 
+  void _copyToClipboard(String text) {
+    Clipboard.setData(ClipboardData(text: text)).then((_) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'URL berhasil disalin',
+            style: TextStyle(fontSize: 14.sp),
+          ),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    final payment = widget.order.payment; // Correcting payment data
-
-    // Fungsi untuk menyalin teks ke clipboard
-    void copyToClipboard(BuildContext context, String text) {
-      Clipboard.setData(ClipboardData(text: text)).then((_) {
-        // ignore: use_build_context_synchronously
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'berhasil disalin',
-              style: TextStyle(fontSize: 14.sp),
-            ),
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      });
-    }
+    final qrUrl = payment['payment_qr_url'];
 
     return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.white,
         leading: IconButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          icon: Icon(
-            Icons.arrow_back,
-            size: 28.sp,
-            color: AppColors.primary,
-          ),
+          onPressed: () => Navigator.pop(context),
+          icon: Icon(Icons.arrow_back, size: 28.sp, color: AppColors.primary),
         ),
         centerTitle: false,
         title: Text(
-          'Pembayaran',
+          'Pembayaran QRIS',
           style: TextStyle(
             fontSize: 16.sp,
             fontFamily: 'SemiBold',
@@ -211,14 +187,14 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
           children: [
             Row(
               children: [
-                if (currentStatus == 'PENDING')
+                if (paymentData['status'] == 'PENDING')
                   Image.asset(
                     'assets/icons/ic_time.png',
                     width: 30.w,
                     color: AppColors.secondary,
                     height: 30.h,
                   ),
-                if (currentStatus == 'PAID')
+                if (paymentData['status'] == 'PAID')
                   Image.asset(
                     'assets/icons/checklist.png',
                     width: 30.w,
@@ -230,7 +206,7 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    if (currentStatus == 'PENDING')
+                    if (paymentData['status'] == 'PENDING')
                       Text(
                         'Bayar Sebelum',
                         style: TextStyle(
@@ -238,7 +214,7 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
                           fontFamily: 'SemiBold',
                         ),
                       ),
-                    if (currentStatus == 'PAID')
+                    if (paymentData['status'] == 'PAID')
                       Text(
                         'Pembayaran Berhasil',
                         style: TextStyle(
@@ -247,7 +223,7 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
                         ),
                       ),
                     Text(
-                      formatDate(payment!.expiredAt.toString()),
+                      formatDate(payment['expired_at']),
                       style: TextStyle(
                         fontSize: 10.sp,
                         fontFamily: 'Medium',
@@ -257,7 +233,7 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
                   ],
                 ),
                 const Spacer(),
-                if (currentStatus == 'PENDING')
+                if (paymentData['status'] == 'PENDING')
                   Container(
                     padding:
                         EdgeInsets.symmetric(vertical: 8.sp, horizontal: 16.sp),
@@ -267,7 +243,7 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
                       borderRadius: BorderRadius.circular(80.r),
                     ),
                     child: Text(
-                      _formatTime(_remainingSeconds),
+                      _formatTime(_remainingSeconds - 8),
                       style: TextStyle(
                         fontSize: 10.sp,
                         fontFamily: 'SemiBold',
@@ -281,45 +257,49 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
               padding: EdgeInsets.symmetric(vertical: 14.0),
               child: Divider(),
             ),
-            Text(
-              'Nomor Virtual Account ${payment.paymentVaName}',
-              style: TextStyle(
-                fontSize: 10.sp,
-                fontFamily: 'Medium',
-                color: AppColors.greyPrice,
+            Center(
+              child: Column(
+                children: [
+                  Text(
+                    'Silakan scan QR berikut:',
+                    style: TextStyle(
+                      fontSize: 12.sp,
+                      fontFamily: 'Medium',
+                      color: AppColors.black,
+                    ),
+                  ),
+                  SizedBox(height: 16.h),
+                  Image.network(
+                    qrUrl,
+                    width: 200.w,
+                    height: 200.w,
+                    errorBuilder: (_, __, ___) => const Text('Gagal memuat QR'),
+                  ),
+                  SizedBox(height: 12.h),
+                  GestureDetector(
+                    onTap: () => _copyToClipboard(qrUrl),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.copy, size: 20.sp, color: AppColors.primary),
+                        SizedBox(width: 8.w),
+                        Text(
+                          'Salin URL QR',
+                          style: TextStyle(
+                            fontSize: 12.sp,
+                            fontFamily: 'SemiBold',
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
               ),
             ),
-            SizedBox(
-              width: 8.w,
-            ),
-            Row(
-              children: [
-                Text(
-                  payment.paymentVaNumber!,
-                  style: TextStyle(
-                    fontFamily: 'SemiBold',
-                    fontSize: 14.sp,
-                  ),
-                ),
-                SizedBox(
-                  width: 8.w,
-                ),
-                GestureDetector(
-                  onTap: () {
-                    // Panggil fungsi untuk menyalin teks
-                    copyToClipboard(context, payment.paymentVaNumber!);
-                  },
-                  child: Image.asset(
-                    'assets/icons/ic_copy.png',
-                    width: 25.w,
-                    height: 25.h,
-                    color: AppColors.primary,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(
-              height: 16.h,
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 14.0),
+              child: Divider(),
             ),
             Text(
               'Total Tagihan',
@@ -329,69 +309,41 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
                 color: AppColors.greyPrice,
               ),
             ),
-            SizedBox(
-              width: 8.w,
-            ),
+            SizedBox(height: 8.h),
             Text(
-              formatCurrency(payment.grossAmount as String),
+              formatCurrency(payment['gross_amount'].toString()),
               style: TextStyle(
                 fontFamily: 'SemiBold',
                 fontSize: 14.sp,
               ),
             ),
-            const Padding(
-              padding: EdgeInsets.symmetric(vertical: 14.0),
-              child: Divider(),
-            ),
+            SizedBox(height: 24.h),
             Text(
-              'Metode Bayar',
+              'Instruksi Pembayaran QRIS:',
               style: TextStyle(
                 fontFamily: 'SemiBold',
                 fontSize: 12.sp,
               ),
             ),
-            SizedBox(
-              height: 16.h,
-            ),
+            SizedBox(height: 12.h),
             Text(
-              '1. Pilih m-Transfer > Virtual Account',
-              style: TextStyle(
-                fontSize: 12.sp,
-                fontFamily: 'Medium',
-              ),
+              '1. Buka aplikasi pembayaran yang mendukung QRIS.',
+              style: TextStyle(fontSize: 12.sp),
             ),
-            SizedBox(
-              height: 8.h,
-            ),
+            SizedBox(height: 6.h),
             Text(
-              '2. Masukkan nomor Virtual Account ${payment.paymentVaName} dan pilih Send',
-              style: TextStyle(
-                fontSize: 12.sp,
-                fontFamily: 'Medium',
-              ),
+              '2. Scan QR di atas atau salin URL-nya.',
+              style: TextStyle(fontSize: 12.sp),
             ),
-            SizedBox(
-              height: 8.h,
-            ),
+            SizedBox(height: 6.h),
             Text(
-              '3. Periksa informasi yang tertera di layar. Pastikan merchant adalah Kantin Ngudi. Total tagihan sudah benar. Jika benar, pilih Ya',
-              style: TextStyle(
-                fontSize: 12.sp,
-                fontFamily: 'Medium',
-              ),
+              '3. Pastikan total tagihan dan merchant sudah benar.',
+              style: TextStyle(fontSize: 12.sp),
             ),
-            SizedBox(
-              height: 8.h,
-            ),
+            SizedBox(height: 6.h),
             Text(
-              '4. Masukkan pin Anda dan pilih OK',
-              style: TextStyle(
-                fontSize: 12.sp,
-                fontFamily: 'Medium',
-              ),
-            ),
-            SizedBox(
-              height: 24.h,
+              '4. Selesaikan pembayaran.',
+              style: TextStyle(fontSize: 12.sp),
             ),
           ],
         ),

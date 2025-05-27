@@ -74,19 +74,22 @@ class OrderRepository {
 class OrderRequest {
   final String tableNumber;
   final String paymentType;
-  final String bank;
+  final String? bank;
 
   OrderRequest({
     required this.tableNumber,
     required this.paymentType,
-    required this.bank,
+    this.bank,
   });
 
   Map<String, dynamic> toJson() {
-    return {
+    final map = {
       'table_number': tableNumber,
       'payment_type': paymentType,
-      'bank': bank,
     };
+    if (bank != null) {
+      map['bank'] = bank!;
+    }
+    return map;
   }
 }
