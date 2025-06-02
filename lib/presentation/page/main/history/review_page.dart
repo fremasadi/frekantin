@@ -286,8 +286,7 @@ class _ReviewPageState extends State<ReviewPage> {
                                               context.read<ReviewBloc>().add(
                                                     SubmitReview(
                                                       orderId: int.parse(
-                                                          orderItem.orderId
-                                                              as String),
+                                                          orderItem.orderId),
                                                       productId:
                                                           orderItem.product.id,
                                                       rating: _ratings[index],

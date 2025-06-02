@@ -10,6 +10,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import '../../../../data/models/order.dart';
 import '../../../../data/repository/order_repository.dart';
 import '../../../bloc/order/order_bloc.dart';
+import '../../order/qris_payment_page.dart';
 import 'payment_history_page.dart';
 
 class HistoryPage extends StatefulWidget {
@@ -134,7 +135,7 @@ class _HistoryPageState extends State<HistoryPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              height: ScreenUtil().statusBarHeight,
+              height: ScreenUtil().statusBarHeight + 10.h,
             ),
             Row(
               children: [
@@ -360,10 +361,22 @@ class _HistoryPageState extends State<HistoryPage> {
                     ClipRRect(
                       borderRadius: BorderRadius.circular(12.sp),
                       child: Image.network(
-                        '$imageUrl/storage/${order.orderItems.first.product.image}', // Menampilkan gambar item pertama
+                        '$imageUrl/${order.orderItems.first.product.image}',
                         width: 100.w,
                         height: 70.h,
                         fit: BoxFit.fill,
+                        errorBuilder: (context, error, stackTrace) {
+                          return Container(
+                            width: 100.w,
+                            height: 70.h,
+                            color: Colors.grey[300],
+                            child: Icon(
+                              Icons.broken_image,
+                              size: 40,
+                              color: Colors.grey[600],
+                            ),
+                          );
+                        },
                       ),
                     ),
                     SizedBox(
@@ -568,13 +581,30 @@ class _HistoryPageState extends State<HistoryPage> {
               if (order.orderStatus == 'PENDING')
                 GestureDetector(
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PaymentHistoryPage(
-                            order: order), // Pass the order to the PaymentPage
-                      ),
-                    );
+                    if (order.payment.paymentType == 'BANK_TRANSFER') {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              PaymentHistoryPage(order: order),
+                        ),
+                      );
+                    } else if (order.payment.paymentType == 'QRIS') {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              QrisPaymentPage(response: order.toJson()),
+                        ),
+                      );
+                    } else {
+                      // fallback jika jenis pembayaran tidak dikenali
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Metode pembayaran tidak didukung.'),
+                        ),
+                      );
+                    }
                   },
                   child: Container(
                     padding:

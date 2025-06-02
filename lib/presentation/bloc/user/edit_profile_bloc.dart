@@ -54,7 +54,6 @@ class EditProfileBloc extends Bloc<EditProfileEvent, EditProfileState> {
         emit(EditProfileSuccess(
             message: response['message'] ?? 'Profil berhasil diperbarui'));
       } catch (e) {
-        print(e.toString());
         emit(EditProfileError(message: e.toString()));
       }
     });

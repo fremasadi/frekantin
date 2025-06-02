@@ -8,10 +8,12 @@ import '../../bloc/review/review_bloc.dart';
 
 class ProductCard extends StatefulWidget {
   final Product product;
+  final VoidCallback onPress;
 
   const ProductCard({
     super.key,
     required this.product,
+    required this.onPress,
   });
 
   @override
@@ -85,43 +87,41 @@ class _ProductCardState extends State<ProductCard> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          color: AppColors.secondary,
-                          borderRadius: BorderRadius.circular(16.sp),
-                        ),
-                        padding: EdgeInsets.symmetric(
-                          vertical: 4.sp,
-                          horizontal: 12.sp,
-                        ),
-                        child: BlocBuilder<ReviewBloc, ReviewState>(
-                          builder: (context, state) {
-                            return Row(
-                              children: [
-                                Icon(
-                                  Icons.star,
-                                  size: 16.sp,
+                  GestureDetector(
+                    onTap: widget.onPress,
+                    child: Row(
+                      children: [
+                        Container(
+                          decoration: BoxDecoration(
+                            color: AppColors.secondary,
+                            borderRadius: BorderRadius.circular(16.sp),
+                          ),
+                          padding: EdgeInsets.symmetric(
+                            vertical: 4.sp,
+                            horizontal: 12.sp,
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.star,
+                                size: 16.sp,
+                                color: AppColors.white,
+                              ),
+                              SizedBox(width: 4.sp),
+                              Text(
+                                widget.product.averageRating.toStringAsFixed(1),
+                                // ✅ Fix disini
+                                style: TextStyle(
+                                  fontSize: 12.sp,
                                   color: AppColors.white,
+                                  fontFamily: 'SemiBold',
                                 ),
-                                SizedBox(width: 4.sp),
-                                Text(
-                                  state is ReviewLoaded
-                                      ? state.rating.toStringAsFixed(1)
-                                      : '-',
-                                  style: TextStyle(
-                                    fontSize: 12.sp,
-                                    color: AppColors.white,
-                                    fontFamily: 'SemiBold',
-                                  ),
-                                ),
-                              ],
-                            );
-                          },
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                   SizedBox(height: 4.h),
                   Text(

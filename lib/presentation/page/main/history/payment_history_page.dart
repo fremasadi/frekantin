@@ -60,7 +60,7 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
 
     final payment = widget.order.payment;
 
-    final paymentGatewayResponse = payment?.paymentGatewayResponse;
+    final paymentGatewayResponse = payment.paymentGatewayResponse;
     // ignore: unnecessary_type_check
     final parsedResponse = paymentGatewayResponse is String
         ? jsonDecode(paymentGatewayResponse)
@@ -247,7 +247,7 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
                         ),
                       ),
                     Text(
-                      formatDate(payment!.expiredAt.toString()),
+                      formatDate(payment.expiredAt.toString()),
                       style: TextStyle(
                         fontSize: 10.sp,
                         fontFamily: 'Medium',
@@ -333,7 +333,7 @@ class _PaymentHistoryPageState extends State<PaymentHistoryPage> {
               width: 8.w,
             ),
             Text(
-              formatCurrency(payment.grossAmount as String),
+              formatCurrency(payment.grossAmount),
               style: TextStyle(
                 fontFamily: 'SemiBold',
                 fontSize: 14.sp,

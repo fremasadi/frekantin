@@ -26,7 +26,6 @@ class ReviewRepository {
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        print('[checkReview] API response: $data');
 
         return data; // Kembalikan data lengkap (status, rating, comment)
       }

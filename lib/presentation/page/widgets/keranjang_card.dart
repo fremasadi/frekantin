@@ -1,10 +1,11 @@
-// keranjang_card.dart - Updated with seller status handling
+// keranjang_card.dart - Updated with notes navigation
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../../../core/util/price_converter.dart';
+
 import '../../../core/constant/colors.dart';
+import '../../../core/util/price_converter.dart';
+import '../cart/edit_note_page.dart';
 
 class KeranjangCard extends StatefulWidget {
   final int productId;
@@ -15,7 +16,9 @@ class KeranjangCard extends StatefulWidget {
   final VoidCallback onAdd;
   final VoidCallback onRemove;
   final VoidCallback onDelete;
-  final bool? isSellerActive; // New property for seller active status
+  final bool? isSellerActive;
+  final String? notes; // Add notes parameter
+  final int itemId; // Add itemId for notes update
 
   const KeranjangCard({
     super.key,
@@ -27,7 +30,9 @@ class KeranjangCard extends StatefulWidget {
     required this.onRemove,
     required this.productId,
     required this.onDelete,
-    this.isSellerActive, // Add this parameter
+    required this.itemId, // Make itemId required
+    this.isSellerActive,
+    this.notes, // Add notes parameter
   });
 
   @override
@@ -36,35 +41,11 @@ class KeranjangCard extends StatefulWidget {
 
 class _KeranjangCardState extends State<KeranjangCard> {
   late int _currentQuantity;
-  late TextEditingController noteController;
 
   @override
   void initState() {
     super.initState();
     _currentQuantity = widget.initialQuantity;
-    noteController = TextEditingController();
-    _loadNote();
-  }
-
-  @override
-  void dispose() {
-    noteController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _loadNote() async {
-    final prefs = await SharedPreferences.getInstance();
-    String? savedNote = prefs.getString('note_${widget.productId}');
-    if (savedNote != null) {
-      setState(() {
-        noteController.text = savedNote;
-      });
-    }
-  }
-
-  Future<void> saveNoteToLocal(String productId, String note) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('note_$productId', note);
   }
 
   void _increment() {
@@ -87,10 +68,24 @@ class _KeranjangCardState extends State<KeranjangCard> {
     }
   }
 
+  void _navigateToEditNote() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditNotePage(
+          itemId: widget.itemId,
+          productName: widget.title,
+          currentNote: widget.notes ?? '',
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // Apply a filter effect to the entire card if seller is inactive
     final isInactive = widget.isSellerActive == false;
+    final hasNotes = widget.notes != null && widget.notes!.isNotEmpty;
 
     return Padding(
       padding: const EdgeInsets.all(12.0),
@@ -115,8 +110,8 @@ class _KeranjangCardState extends State<KeranjangCard> {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(8),
                       child: CachedNetworkImage(
-                        width: 100.h,
-                        height: 100.w,
+                        width: 80.h,
+                        height: 80.w,
                         fit: BoxFit.cover,
                         imageUrl: widget.imageUrl,
                       ),
@@ -183,76 +178,121 @@ class _KeranjangCardState extends State<KeranjangCard> {
                             width: 25.w,
                             height: 25.h,
                             color: Colors.red,
-                            // color: isInactive ? Colors.grey[600] : null,
                           ),
                         )
                       ],
                     ),
-                    SizedBox(
-                      height: 12.h,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            GestureDetector(
-                              onTap: isInactive ? null : _decrement,
-                              child: Container(
-                                padding: const EdgeInsets.all(4),
-                                decoration: BoxDecoration(
-                                  border:
-                                      Border.all(color: Colors.grey.shade300),
-                                  borderRadius: BorderRadius.circular(8),
-                                  color: isInactive ? Colors.grey[200] : null,
-                                ),
-                                child: Icon(
-                                  Icons.remove,
-                                  color: isInactive
-                                      ? Colors.grey[400]
-                                      : AppColors.black,
-                                  size: 24.sp,
-                                ),
-                              ),
-                            ),
-                            SizedBox(width: 12.w),
-                            Text(
-                              '$_currentQuantity',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium
-                                  ?.copyWith(
-                                    color: isInactive ? Colors.grey[600] : null,
-                                  ),
-                            ),
-                            SizedBox(width: 12.w),
-                            GestureDetector(
-                              onTap: isInactive ? null : _increment,
-                              child: Container(
-                                padding: const EdgeInsets.all(4),
-                                decoration: BoxDecoration(
-                                  border:
-                                      Border.all(color: Colors.grey.shade300),
-                                  borderRadius: BorderRadius.circular(8),
-                                  color: isInactive ? Colors.grey[200] : null,
-                                ),
-                                child: Icon(
-                                  Icons.add,
-                                  color: isInactive
-                                      ? Colors.grey[400]
-                                      : AppColors.secondary,
-                                  size: 24.sp,
-                                ),
-                              ),
-                            ),
-                          ],
+                    // Show current notes if exists
+                    if (hasNotes) ...[
+                      SizedBox(height: 4.h),
+                      Text(
+                        'Catatan: ${widget.notes}',
+                        style: TextStyle(
+                          fontFamily: 'Medium',
+                          fontSize: 10.sp,
+                          color: AppColors.greyPrice,
+                          fontStyle: FontStyle.italic,
                         ),
-                      ],
-                    ),
-                    // Add message if seller is inactive
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
                   ],
                 ),
+              ),
+            ],
+          ),
+          SizedBox(
+            height: 8.h,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              GestureDetector(
+                onTap: _navigateToEditNote,
+                child: Container(
+                  padding:
+                      EdgeInsets.symmetric(vertical: 4.h, horizontal: 12.sp),
+                  decoration: BoxDecoration(
+                    color: hasNotes
+                        ? AppColors.secondary.withOpacity(0.1)
+                        : AppColors.grey,
+                    borderRadius: BorderRadius.circular(12.sp),
+                    border: hasNotes
+                        ? Border.all(
+                            color: AppColors.secondary.withOpacity(0.3))
+                        : null,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        hasNotes ? Icons.edit_note : Icons.edit,
+                        color: hasNotes
+                            ? AppColors.secondary
+                            : AppColors.greyPrice,
+                        size: 16.sp,
+                      ),
+                      SizedBox(width: 6.w),
+                      Text(
+                        hasNotes ? 'Edit Catatan' : 'Tambah Catatan',
+                        style: TextStyle(
+                          fontFamily: 'SemiBold',
+                          fontSize: 12.sp,
+                          color: hasNotes
+                              ? AppColors.secondary
+                              : AppColors.greyPrice,
+                        ),
+                      )
+                    ],
+                  ),
+                ),
+              ),
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  GestureDetector(
+                    onTap: isInactive ? null : _decrement,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(8),
+                        color: isInactive ? Colors.grey[200] : null,
+                      ),
+                      child: Icon(
+                        Icons.remove,
+                        color: isInactive ? Colors.grey[400] : AppColors.black,
+                        size: 18.sp,
+                      ),
+                    ),
+                  ),
+                  SizedBox(width: 12.w),
+                  Text(
+                    '$_currentQuantity',
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          color: isInactive ? Colors.grey[600] : null,
+                        ),
+                  ),
+                  SizedBox(width: 12.w),
+                  GestureDetector(
+                    onTap: isInactive ? null : _increment,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(8),
+                        color: isInactive ? Colors.grey[200] : null,
+                      ),
+                      child: Icon(
+                        Icons.add,
+                        color:
+                            isInactive ? Colors.grey[400] : AppColors.secondary,
+                        size: 18.sp,
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),

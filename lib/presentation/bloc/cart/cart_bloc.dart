@@ -57,5 +57,15 @@ class CartBloc extends Bloc<CartEvent, CartState> {
         emit(const CartError('Failed to remove cart item'));
       }
     });
+    on<UpdateCartItemNotes>((event, emit) async {
+      emit(CartLoading());
+      try {
+        await cartRepository.updateCartItemNotes(event.itemId, event.notes);
+        emit(const CartActionSuccess('Catatan berhasil diperbarui'));
+        add(LoadCart()); // Refresh cart after updating notes
+      } catch (e) {
+        emit(CartError('Failed to update cart item notes: $e'));
+      }
+    });
   }
 }

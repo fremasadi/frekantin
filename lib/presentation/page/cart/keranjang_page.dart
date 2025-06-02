@@ -1,7 +1,6 @@
 import 'package:e_kantin/core/constant/colors.dart';
 import 'package:e_kantin/presentation/page/order/order_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
@@ -12,7 +11,7 @@ import '../../bloc/cart/cart_state.dart';
 import '../../bloc/order/order_bloc.dart';
 import '../../bloc/table_number/table_number_bloc.dart';
 import '../widgets/keranjang_card.dart';
-import 'QRScannerPage.dart';
+import 'scan_nomer_meja.dart';
 
 class KeranjangPage extends StatelessWidget {
   KeranjangPage({super.key});
@@ -138,24 +137,57 @@ class KeranjangPage extends StatelessWidget {
                         // Input Nomor Meja
                         GestureDetector(
                           onTap: () async {
+                            // Show loading indicator while opening scanner
+                            showDialog(
+                              context: context,
+                              barrierDismissible: false,
+                              builder: (context) => const Center(
+                                child: CircularProgressIndicator(),
+                              ),
+                            );
+
+                            // Small delay to show loading
+                            await Future.delayed(
+                                const Duration(milliseconds: 0));
+                            Navigator.pop(context); // Close loading
+
                             String? scannedResult = await Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => const QRScannerPage()),
+                                builder: (context) => const QrScannerPage(),
+                              ),
                             );
-                            if (scannedResult != null) {
+
+                            if (scannedResult != null &&
+                                scannedResult.isNotEmpty) {
                               _tableNumberController.text = scannedResult;
+                              // Show success snackbar
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                      'Meja $scannedResult berhasil dipilih'),
+                                  backgroundColor: Colors.green,
+                                  behavior: SnackBarBehavior.floating,
+                                ),
+                              );
                             }
                           },
                           child: Container(
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(8.0),
+                              borderRadius: BorderRadius.circular(12.0),
+                              // Increased radius
+                              border: Border.all(
+                                color: _tableNumberController.text.isEmpty
+                                    ? Colors.grey.withOpacity(0.3)
+                                    : Colors.green.withOpacity(0.5),
+                                width: 1.5,
+                              ),
                               boxShadow: [
                                 BoxShadow(
                                   color: Colors.black
-                                      .withAlpha((255 * 0.2).toInt()),
-                                  blurRadius: 1.0,
+                                      .withAlpha((255 * 0.1).toInt()),
+                                  blurRadius: 8.0,
                                   spreadRadius: 0.0,
                                   offset: const Offset(0, 2),
                                 ),
@@ -163,26 +195,59 @@ class KeranjangPage extends StatelessWidget {
                             ),
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
-                                  vertical: 16.0, horizontal: 12.0),
+                                  vertical: 16.0, horizontal: 16.0),
                               child: Row(
                                 children: [
-                                  Image.asset(
-                                    'assets/icons/ic_location.png',
-                                    width: 25.w,
-                                    height: 25.h,
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Text(
-                                    _tableNumberController.text.isEmpty
-                                        ? 'Scan Barcode Meja Anda'
-                                        : _tableNumberController.text,
-                                    style: TextStyle(
-                                      fontSize: 12.sp,
-                                      fontFamily: 'Medium',
+                                  Container(
+                                    padding: const EdgeInsets.all(8),
+                                    decoration: BoxDecoration(
+                                      color: _tableNumberController.text.isEmpty
+                                          ? Colors.grey.withOpacity(0.1)
+                                          : Colors.green.withOpacity(0.1),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Icon(
+                                      Icons.qr_code_scanner,
+                                      size: 24,
                                       color: _tableNumberController.text.isEmpty
                                           ? Colors.grey
-                                          : Colors.black,
+                                          : Colors.green,
                                     ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          _tableNumberController.text.isEmpty
+                                              ? 'Scan QR Code Meja'
+                                              : 'Meja ${_tableNumberController.text}',
+                                          style: TextStyle(
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w500,
+                                            color: _tableNumberController
+                                                    .text.isEmpty
+                                                ? Colors.grey[600]
+                                                : Colors.black87,
+                                          ),
+                                        ),
+                                        if (_tableNumberController.text.isEmpty)
+                                          Text(
+                                            'Tap untuk memindai',
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: Colors.grey[500],
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                  Icon(
+                                    Icons.arrow_forward_ios,
+                                    size: 16,
+                                    color: Colors.grey[400],
                                   ),
                                 ],
                               ),
@@ -191,6 +256,7 @@ class KeranjangPage extends StatelessWidget {
                         ),
 
                         // List Item
+                        // Updated ListView.builder in cart page
                         Expanded(
                           child: ListView.builder(
                             padding: EdgeInsets.zero,
@@ -213,6 +279,10 @@ class KeranjangPage extends StatelessWidget {
                                 price: item.product?.price ?? 0.0,
                                 initialQuantity: item.quantity,
                                 isSellerActive: isSellerActive,
+                                notes: item.notes,
+                                // Pass the notes from cart item
+                                itemId: item.id,
+                                // Pass the item ID for notes update
                                 // Pass seller active status
                                 onAdd: () {
                                   // Only allow add if seller is active
@@ -334,7 +404,7 @@ class KeranjangPage extends StatelessWidget {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 content: Text(
-                                  'Silakan isi nomor meja terlebih dahulu',
+                                  'Silakan scan nomor meja terlebih dahulu',
                                 ),
                               ),
                             );

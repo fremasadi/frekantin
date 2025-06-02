@@ -69,27 +69,76 @@ class OrderRepository {
       rethrow;
     }
   }
+
+  Future<Map<int, String>> getAllProductNotes(List<int> productIds) async {
+    final prefs = await SharedPreferences.getInstance();
+    Map<int, String> notes = {};
+
+    for (var id in productIds) {
+      String? note = prefs.getString('note_$id');
+      if (note != null && note.isNotEmpty) {
+        notes[id] = note;
+      }
+    }
+
+    return notes;
+  }
+
+  Future<void> clearProductNotes(List<int> productIds) async {
+    final prefs = await SharedPreferences.getInstance();
+    for (var id in productIds) {
+      await prefs.remove('note_$id');
+    }
+  }
 }
 
 class OrderRequest {
   final String tableNumber;
   final String paymentType;
   final String? bank;
+  final List<OrderItemRequest> items;
 
   OrderRequest({
     required this.tableNumber,
     required this.paymentType,
     this.bank,
+    required this.items,
   });
 
   Map<String, dynamic> toJson() {
     final map = {
       'table_number': tableNumber,
       'payment_type': paymentType,
+      'items': items.map((item) => item.toJson()).toList(),
     };
     if (bank != null) {
       map['bank'] = bank!;
     }
     return map;
   }
+
+  Future<void> clearProductNotes(List<int> productIds) async {
+    final prefs = await SharedPreferences.getInstance();
+    for (var id in productIds) {
+      await prefs.remove('note_$id');
+    }
+  }
+}
+
+class OrderItemRequest {
+  final int productId;
+  final int quantity;
+  final String notes;
+
+  OrderItemRequest({
+    required this.productId,
+    required this.quantity,
+    this.notes = '',
+  });
+
+  Map<String, dynamic> toJson() => {
+        'product_id': productId,
+        'quantity': quantity,
+        'notes': notes,
+      };
 }

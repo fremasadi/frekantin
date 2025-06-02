@@ -37,9 +37,6 @@ class EditProfileRepository {
           }),
         );
 
-        print('Status Code: ${response.statusCode}');
-        print('Response Body: ${response.body}');
-
         if (response.statusCode == 200) {
           return jsonDecode(response.body);
         } else {
@@ -76,9 +73,6 @@ class EditProfileRepository {
         final streamedResponse = await request.send();
         final response = await http.Response.fromStream(streamedResponse);
 
-        print('Status Code: ${response.statusCode}');
-        print('Response Body: ${response.body}');
-
         if (response.statusCode == 200) {
           return jsonDecode(response.body);
         } else {
@@ -87,7 +81,6 @@ class EditProfileRepository {
         }
       }
     } catch (e) {
-      print('Error updating profile: $e');
       throw Exception('Gagal update profile: $e');
     }
   }

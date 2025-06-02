@@ -3,6 +3,7 @@ import 'package:e_kantin/core/constant/strings.dart';
 import 'package:e_kantin/core/router/app_router.dart';
 import 'package:e_kantin/presentation/page/main/kategory/detail_product_kategory.dart';
 import 'package:e_kantin/presentation/page/main/kategory/kategory_page.dart';
+import 'package:e_kantin/presentation/page/main/review/review_product_page.dart';
 import 'package:e_kantin/presentation/page/widgets/product_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,6 +20,7 @@ import '../../../bloc/review/review_bloc.dart';
 import '../../../bloc/user/user_bloc.dart';
 import '../../widgets/category_card.dart';
 import '../../widgets/image_slider.dart';
+import '../history/review_page.dart';
 import '../produk/detail_produk_page.dart';
 
 class HomePage extends StatefulWidget {
@@ -150,43 +152,43 @@ class _HomePageState extends State<HomePage> {
                               final product = state.products[index];
                               final bool isSellerActive =
                                   product.seller?.isActive == 1;
-
-                              return BlocProvider(
-                                create: (context) => ReviewBloc(
-                                  repository: ReviewRepository(),
-                                  productId: product.id,
-                                )..add(FetchAverageRating(product.id)),
-                                child: GestureDetector(
-                                  onTap: () {
-                                    if (isSellerActive) {
-                                      showModalBottomSheet(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return DetailProdukPage(
-                                              product: product);
-                                        },
-                                      );
-                                    } else {
-                                      ScaffoldMessenger.of(context)
-                                          .showSnackBar(
-                                        const SnackBar(
-                                          content: Text(
-                                              'Penjual tidak aktif untuk saat ini.'),
-                                          duration: Duration(seconds: 2),
-                                          behavior: SnackBarBehavior.floating,
-                                        ),
-                                      );
-                                    }
+                              return GestureDetector(
+                                onTap: () {
+                                  if (isSellerActive) {
+                                    showModalBottomSheet(
+                                      context: context,
+                                      builder: (BuildContext context) {
+                                        return DetailProdukPage(
+                                            product: product);
+                                      },
+                                    );
+                                  } else {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                            'Penjual tidak aktif untuk saat ini.'),
+                                        duration: Duration(seconds: 2),
+                                        behavior: SnackBarBehavior.floating,
+                                      ),
+                                    );
+                                  }
+                                },
+                                child: ProductCard(
+                                  product: product,
+                                  onPress: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => ReviewProductPage(
+                                            productId: product.id),
+                                      ),
+                                    );
                                   },
-                                  child: ProductCard(
-                                    product: product,
-                                  ),
                                 ),
                               );
                             },
                           );
                         } else if (state is ProductError) {
-                          print('${state.message}');
                           return Text('Error: ${state.message}');
                         }
                         return Container();

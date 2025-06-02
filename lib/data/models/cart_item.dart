@@ -5,6 +5,8 @@ class CartItem {
   final int cartId;
   final int productId;
   final int quantity;
+  final String? notes; // Add notes field
+
   final DateTime createdAt;
   final DateTime updatedAt;
   final CartProduct? product;
@@ -14,6 +16,8 @@ class CartItem {
     required this.cartId,
     required this.productId,
     required this.quantity,
+    this.notes, // Add notes parameter
+
     required this.createdAt,
     required this.updatedAt,
     this.product,
@@ -31,6 +35,9 @@ class CartItem {
       quantity: json['quantity'] is String
           ? int.parse(json['quantity'])
           : json['quantity'],
+      notes: json['notes'],
+      // Parse notes from JSON
+
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
       product: json['product'] != null
@@ -45,6 +52,7 @@ class CartItem {
       'cart_id': cartId,
       'product_id': productId,
       'quantity': quantity,
+      'notes': notes,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
       'product': product?.toJson(),

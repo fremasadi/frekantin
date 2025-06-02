@@ -10,6 +10,7 @@ import '../../../bloc/search_product/search_product_bloc.dart';
 import '../../../bloc/search_product/search_product_event.dart';
 import '../../../bloc/search_product/search_product_state.dart';
 import '../produk/detail_produk_page.dart';
+import '../review/review_product_page.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({super.key});
@@ -159,65 +160,78 @@ class _SearchPageState extends State<SearchPage> {
                           child: Row(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Stack(
-                                children: [
-                                  ColorFiltered(
-                                    colorFilter: isSellerActive
-                                        ? const ColorFilter.mode(
-                                            Colors.transparent,
-                                            BlendMode.multiply)
-                                        : const ColorFilter.matrix(<double>[
-                                            0.2126,
-                                            0.7152,
-                                            0.0722,
-                                            0,
-                                            0,
-                                            0.2126,
-                                            0.7152,
-                                            0.0722,
-                                            0,
-                                            0,
-                                            0.2126,
-                                            0.7152,
-                                            0.0722,
-                                            0,
-                                            0,
-                                            0,
-                                            0,
-                                            0,
-                                            1,
-                                            0,
-                                          ]),
-                                    child: ClipRRect(
-                                      borderRadius: BorderRadius.circular(8.0),
-                                      child: Image.network(
-                                        product.image!,
-                                        height: 100.h,
-                                        width: 100.w,
-                                        fit: BoxFit.cover,
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => ReviewProductPage(
+                                          productId: product.id),
+                                    ),
+                                  );
+                                },
+                                child: Stack(
+                                  children: [
+                                    ColorFiltered(
+                                      colorFilter: isSellerActive
+                                          ? const ColorFilter.mode(
+                                              Colors.transparent,
+                                              BlendMode.multiply)
+                                          : const ColorFilter.matrix(<double>[
+                                              0.2126,
+                                              0.7152,
+                                              0.0722,
+                                              0,
+                                              0,
+                                              0.2126,
+                                              0.7152,
+                                              0.0722,
+                                              0,
+                                              0,
+                                              0.2126,
+                                              0.7152,
+                                              0.0722,
+                                              0,
+                                              0,
+                                              0,
+                                              0,
+                                              0,
+                                              1,
+                                              0,
+                                            ]),
+                                      child: ClipRRect(
+                                        borderRadius:
+                                            BorderRadius.circular(8.0),
+                                        child: Image.network(
+                                          product.image!,
+                                          height: 100.h,
+                                          width: 100.w,
+                                          fit: BoxFit.cover,
+                                        ),
                                       ),
                                     ),
-                                  ),
-                                  Positioned(
-                                    bottom: 0,
-                                    right: 0,
-                                    child: BlocBuilder<ReviewBloc, ReviewState>(
-                                      builder: (context, reviewState) {
-                                        if (reviewState is ReviewLoaded) {
-                                          return _buildRatingContainer(
-                                              reviewState.rating.toString());
-                                        } else if (reviewState
-                                            is ReviewLoading) {
-                                          return _buildRatingContainer(
-                                              '-'); // Placeholder saat loading
-                                        } else {
-                                          return _buildRatingContainer(
-                                              '-'); // Placeholder untuk error
-                                        }
-                                      },
+                                    Positioned(
+                                      bottom: 0,
+                                      right: 0,
+                                      child:
+                                          BlocBuilder<ReviewBloc, ReviewState>(
+                                        builder: (context, reviewState) {
+                                          if (reviewState is ReviewLoaded) {
+                                            return _buildRatingContainer(
+                                                reviewState.rating.toString());
+                                          } else if (reviewState
+                                              is ReviewLoading) {
+                                            return _buildRatingContainer(
+                                                '-'); // Placeholder saat loading
+                                          } else {
+                                            return _buildRatingContainer(
+                                                '-'); // Placeholder untuk error
+                                          }
+                                        },
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                               SizedBox(width: 12.0.w),
                               Expanded(

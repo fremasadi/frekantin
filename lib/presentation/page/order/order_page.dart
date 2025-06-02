@@ -12,7 +12,6 @@ import '../../bloc/cart/cart_event.dart';
 import '../../bloc/cart/cart_state.dart';
 import '../../bloc/order/order_bloc.dart';
 import '../widgets/checkout_card.dart';
-import 'SnapPaymentPage.dart';
 import 'gopay_payment_page.dart';
 import 'payment_page.dart';
 
@@ -80,7 +79,7 @@ class _OrderPageState extends State<OrderPage> {
               context,
               MaterialPageRoute(
                   builder: (context) =>
-                      SnapPaymentPage(response: state.response)),
+                      QrisPaymentPage(response: state.response)),
             );
           } else {
             Navigator.push(
@@ -460,7 +459,7 @@ class _OrderPageState extends State<OrderPage> {
                     ],
                   ),
                   GestureDetector(
-                    onTap: () {
+                    onTap: () async {
                       if (_selectedPaymentMethod.isEmpty) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
@@ -470,7 +469,29 @@ class _OrderPageState extends State<OrderPage> {
                         return;
                       }
 
-                      // Buat OrderRequest
+                      // Ambil cartItems dulu (misal dari CartBloc state)
+                      final cartState = context.read<CartBloc>().state;
+                      if (cartState is! CartLoaded) return;
+
+                      final cartItems = cartState.items;
+
+                      // Ambil notes dari SharedPreferences
+                      final orderRepo = OrderRepository();
+                      final productIds =
+                          cartItems.map((e) => e.productId).toList();
+                      final notesMap =
+                          await orderRepo.getAllProductNotes(productIds);
+
+                      // Susun items untuk dikirim
+                      final orderItems = cartItems.map((item) {
+                        return OrderItemRequest(
+                          productId: item.productId,
+                          quantity: item.quantity,
+                          notes: notesMap[item.productId] ?? '',
+                        );
+                      }).toList();
+
+                      // Susun payment type
                       String paymentType;
                       String? bank;
 
@@ -489,13 +510,17 @@ class _OrderPageState extends State<OrderPage> {
                         tableNumber: widget.tableNumber,
                         paymentType: paymentType,
                         bank: bank,
+                        items: orderItems,
                       );
 
-                      // Tambahkan event ke BLoC
+                      // Kirim event ke BLoC
                       context
                           .read<OrderBloc>()
                           .add(CreateOrderEvent(orderRequest));
                       context.read<CartBloc>().add(LoadCart());
+
+                      // Bersihkan catatan dari SharedPreferences
+                      await orderRepo.clearProductNotes(productIds);
                     },
                     child: Container(
                       padding: EdgeInsets.symmetric(

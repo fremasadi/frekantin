@@ -8,13 +8,14 @@ class Product {
   final String name;
   final String description;
   final double price;
-  final String? image; // Dapat null
+  final String? image;
   final int stock;
   final int isActive;
   final DateTime createdAt;
   final DateTime updatedAt;
   final Seller? seller;
   final Category category;
+  final double averageRating; // Tambahan di sini
 
   Product({
     required this.id,
@@ -23,13 +24,14 @@ class Product {
     required this.name,
     required this.description,
     required this.price,
-    this.image, // Dapat null
+    this.image,
     required this.stock,
     required this.isActive,
     required this.createdAt,
     required this.updatedAt,
     this.seller,
     required this.category,
+    this.averageRating = 0.0, // Default 0.0 jika tidak ada
   });
 
   factory Product.fromJson(Map<String, dynamic> json) {
@@ -42,12 +44,9 @@ class Product {
           ? int.parse(json['category_id'])
           : json['category_id'],
       name: json['name'] ?? '',
-      // Fallback ke empty string jika null
       description: json['description'] ?? '',
-      // Fallback ke empty string jika null
       price: double.parse((json['price'] ?? '0').toString()),
       image: json['image'],
-      // Biarkan null jika null
       stock: json['stock'] is String
           ? int.parse(json['stock'])
           : (json['stock'] ?? 0),
@@ -60,6 +59,9 @@ class Product {
           json['updated_at'] ?? DateTime.now().toIso8601String()),
       seller: json['seller'] != null ? Seller.fromJson(json['seller']) : null,
       category: Category.fromJson(json['category'] ?? {}),
+      averageRating: json['average_rating'] != null
+          ? double.tryParse(json['average_rating'].toString()) ?? 0.0
+          : 0.0,
     );
   }
 
@@ -76,6 +78,7 @@ class Product {
       'is_active': isActive,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
+      'average_rating': averageRating, // Tambahan
     };
   }
 }

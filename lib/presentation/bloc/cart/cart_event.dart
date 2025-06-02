@@ -39,3 +39,10 @@ class RemoveCartItem extends CartEvent {
 }
 
 class LoadCartTotal extends CartEvent {}
+
+class UpdateCartItemNotes extends CartEvent {
+  final int itemId;
+  final String notes;
+
+  UpdateCartItemNotes(this.itemId, this.notes);
+}

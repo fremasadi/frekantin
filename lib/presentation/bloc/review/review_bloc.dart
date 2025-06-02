@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
 import '../../../data/models/review.dart';
 import '../../../data/repository/review_repository.dart';
 

@@ -25,6 +25,7 @@ class OrderBloc extends Bloc<OrderEvent, OrderState> {
 
     try {
       final orders = await orderRepository.fetchOrders();
+
       emit(OrdersLoaded(orders));
     } catch (e) {
       emit(OrderFailure('Gagal mengambil daftar pesanan: ${e.toString()}'));

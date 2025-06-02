@@ -127,4 +127,31 @@ class CartRepository {
       throw Exception('Failed to fetch total price');
     }
   }
+
+  Future<void> updateCartItemNotes(int itemId, String notes) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('auth_token');
+
+    final body = jsonEncode({'notes': notes});
+
+    final response = await http.put(
+      Uri.parse('$baseUrl/cart/items/$itemId/notes'),
+      headers: {
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'application/json',
+      },
+      body: body,
+    );
+
+    if (response.statusCode == 200) {
+      final responseData = jsonDecode(response.body);
+      if (responseData['status'] != true) {
+        throw Exception(
+            'Failed to update cart item notes: ${responseData['message']}');
+      }
+    } else {
+      throw Exception(
+          'Failed to update cart item notes, status code: ${response.statusCode}');
+    }
+  }
 }

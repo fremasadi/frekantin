@@ -36,9 +36,9 @@ class Order {
   String orderStatus;
   String totalAmount;
   String tableNumber;
-  DateTime estimatedDeliveryTime;
-  DateTime createdAt;
-  DateTime updatedAt;
+  String estimatedDeliveryTime;
+  String createdAt;
+  String updatedAt;
   List<OrderItem> orderItems;
   Payment payment;
 
@@ -57,21 +57,30 @@ class Order {
     required this.payment,
   });
 
-  factory Order.fromJson(Map<String, dynamic> json) => Order(
-        id: json["id"],
-        orderId: json["order_id"],
-        customerId: json["customer_id"],
-        sellerId: json["seller_id"],
-        orderStatus: json["order_status"],
-        totalAmount: json["total_amount"],
-        tableNumber: json["table_number"],
-        estimatedDeliveryTime: DateTime.parse(json["estimated_delivery_time"]),
-        createdAt: DateTime.parse(json["created_at"]),
-        updatedAt: DateTime.parse(json["updated_at"]),
-        orderItems: List<OrderItem>.from(
-            json["order_items"].map((x) => OrderItem.fromJson(x))),
-        payment: Payment.fromJson(json["payment"]),
-      );
+  factory Order.fromJson(Map<String, dynamic>? json) {
+    if (json == null) {
+      throw Exception('Order JSON is null');
+    }
+
+    return Order(
+      id: json['id'] ?? 0,
+      orderId: json['order_id'] ?? '',
+      customerId: json['customer_id'] ?? '',
+      sellerId: json['seller_id'] ?? '',
+      orderStatus: json['order_status'] ?? '',
+      totalAmount: json['total_amount']?.toString() ?? '0',
+      tableNumber: json['table_number'] ?? '',
+      estimatedDeliveryTime: json['estimated_delivery_time'] ?? '',
+      createdAt: json['created_at'] ?? '',
+      updatedAt: json['updated_at'] ?? '',
+      // FIX: Parse payment object properly
+      payment: Payment.fromJson(json['payment'] ?? {}),
+      orderItems: (json['order_items'] as List<dynamic>?)
+              ?.map((item) => OrderItem.fromJson(item))
+              .toList() ??
+          [],
+    );
+  }
 
   Map<String, dynamic> toJson() => {
         "id": id,
@@ -81,9 +90,9 @@ class Order {
         "order_status": orderStatus,
         "total_amount": totalAmount,
         "table_number": tableNumber,
-        "estimated_delivery_time": estimatedDeliveryTime.toIso8601String(),
-        "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
+        "estimated_delivery_time": estimatedDeliveryTime,
+        "created_at": createdAt,
+        "updated_at": updatedAt,
         "order_items": List<dynamic>.from(orderItems.map((x) => x.toJson())),
         "payment": payment.toJson(),
       };
@@ -92,12 +101,12 @@ class Order {
 class OrderItem {
   int id;
   String orderId;
-  String productId; // Changed from int to String to match the API response
-  int quantity;
+  String productId;
+  String quantity;
   String price;
   String notes;
-  DateTime createdAt;
-  DateTime updatedAt;
+  String createdAt;
+  String updatedAt;
   Product product;
 
   OrderItem({
@@ -113,43 +122,42 @@ class OrderItem {
   });
 
   factory OrderItem.fromJson(Map<String, dynamic> json) => OrderItem(
-        id: json["id"],
-        orderId: json["order_id"],
-        productId: json["product_id"],
-        quantity: int.parse(json["quantity"]),
-        // Convert string to int
-        price: json["price"],
-        notes: json["notes"],
-        createdAt: DateTime.parse(json["created_at"]),
-        updatedAt: DateTime.parse(json["updated_at"]),
-        product: Product.fromJson(json["product"]),
+        id: json["id"] ?? 0,
+        orderId: json["order_id"] ?? '',
+        productId: json["product_id"] ?? '',
+        quantity: json["quantity"]?.toString() ?? '0',
+        price: json["price"]?.toString() ?? '0',
+        notes: json["notes"] ?? '',
+        createdAt: json["created_at"] ?? '',
+        updatedAt: json["updated_at"] ?? '',
+        product: Product.fromJson(json["product"] ?? {}),
       );
 
   Map<String, dynamic> toJson() => {
         "id": id,
         "order_id": orderId,
         "product_id": productId,
-        "quantity": quantity.toString(), // Convert int to string for API
+        "quantity": quantity,
         "price": price,
         "notes": notes,
-        "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
+        "created_at": createdAt,
+        "updated_at": updatedAt,
         "product": product.toJson(),
       };
 }
 
 class Product {
   int id;
-  String sellerId; // Changed from int to String to match the API response
-  String categoryId; // Changed from int to String to match the API response
+  String sellerId;
+  String categoryId;
   String name;
   String description;
   String price;
   String image;
-  String stock; // Changed from int to String to match the API response
-  int isActive; // Added this field from the API response
-  DateTime createdAt;
-  DateTime updatedAt;
+  String stock;
+  String isActive;
+  String createdAt;
+  String updatedAt;
 
   Product({
     required this.id,
@@ -160,24 +168,23 @@ class Product {
     required this.price,
     required this.image,
     required this.stock,
-    required this.isActive, // Added to constructor
+    required this.isActive,
     required this.createdAt,
     required this.updatedAt,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) => Product(
-        id: json["id"],
-        sellerId: json["seller_id"],
-        categoryId: json["category_id"],
-        name: json["name"],
-        description: json["description"],
-        price: json["price"],
-        image: json["image"],
-        stock: json["stock"],
-        isActive: int.parse(json["is_active"] ?? "0"),
-        // Added with fallback
-        createdAt: DateTime.parse(json["created_at"]),
-        updatedAt: DateTime.parse(json["updated_at"]),
+        id: json["id"] ?? 0,
+        sellerId: json["seller_id"]?.toString() ?? '',
+        categoryId: json["category_id"]?.toString() ?? '',
+        name: json["name"] ?? '',
+        description: json["description"] ?? '',
+        price: json["price"]?.toString() ?? '0',
+        image: json["image"] ?? '',
+        stock: json["stock"]?.toString() ?? '0',
+        isActive: json["is_active"]?.toString() ?? "0",
+        createdAt: json["created_at"] ?? '',
+        updatedAt: json["updated_at"] ?? '',
       );
 
   Map<String, dynamic> toJson() => {
@@ -189,29 +196,33 @@ class Product {
         "price": price,
         "image": image,
         "stock": stock,
-        "is_active": isActive.toString(), // Convert to string for API
-        "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
+        "is_active": isActive,
+        "created_at": createdAt,
+        "updated_at": updatedAt,
       };
 }
 
 class Payment {
   int id;
-  String orderId; // Changed from int to String to match the API response
+  String orderId;
   String paymentStatus;
   String paymentType;
   String paymentGateway;
   String paymentGatewayReferenceId;
   String paymentGatewayResponse;
-  String paymentVaName;
-  String paymentVaNumber;
+  String? paymentVaName;
+  String? paymentVaNumber;
   String? paymentEwallet;
   String grossAmount;
   String? paymentProof;
-  DateTime paymentDate;
-  DateTime expiredAt;
-  DateTime createdAt;
-  DateTime updatedAt;
+  String paymentDate;
+  String expiredAt;
+  String createdAt;
+  String updatedAt;
+  String? paymentQrUrl; // Added missing field
+  String? paymentDeeplink; // Added missing field
+  String? snapToken;
+  String? snapUrl;
 
   Payment({
     required this.id,
@@ -221,8 +232,8 @@ class Payment {
     required this.paymentGateway,
     required this.paymentGatewayReferenceId,
     required this.paymentGatewayResponse,
-    required this.paymentVaName,
-    required this.paymentVaNumber,
+    this.paymentVaName,
+    this.paymentVaNumber,
     this.paymentEwallet,
     required this.grossAmount,
     this.paymentProof,
@@ -230,34 +241,33 @@ class Payment {
     required this.expiredAt,
     required this.createdAt,
     required this.updatedAt,
+    this.paymentQrUrl,
+    this.paymentDeeplink,
+    this.snapToken,
+    this.snapUrl,
   });
 
   factory Payment.fromJson(Map<String, dynamic> json) => Payment(
-        id: json["id"],
-        orderId: json["order_id"],
-        paymentStatus: json["payment_status"],
-        paymentType: json["payment_type"],
-        paymentGateway: json["payment_gateway"],
-        paymentGatewayReferenceId: json["payment_gateway_reference_id"],
-        paymentGatewayResponse: json["payment_gateway_response"],
-        paymentVaName: json["payment_va_name"],
-        paymentVaNumber: json["payment_va_number"],
-        paymentEwallet: json["payment_ewallet"],
-        grossAmount: json["gross_amount"],
-        paymentProof: json["payment_proof"],
-        paymentDate: json["payment_date"] != null
-            ? DateTime.parse(json["payment_date"])
-            : DateTime.now(),
-        expiredAt: json["expired_at"] != null
-            ? DateTime.parse(json["expired_at"])
-            : DateTime.now(),
-        createdAt: json["created_at"] != null
-            ? DateTime.parse(json["created_at"])
-            : DateTime.now(),
-        updatedAt: json["updated_at"] != null
-            ? DateTime.parse(json["updated_at"])
-            : DateTime.now(),
-      );
+      id: json["id"] ?? 0,
+      orderId: json["order_id"]?.toString() ?? '',
+      paymentStatus: json["payment_status"] ?? '',
+      paymentType: json["payment_type"] ?? '',
+      paymentGateway: json["payment_gateway"] ?? '',
+      paymentGatewayReferenceId: json["payment_gateway_reference_id"] ?? '',
+      paymentGatewayResponse: json["payment_gateway_response"] ?? '',
+      paymentVaName: json["payment_va_name"],
+      paymentVaNumber: json["payment_va_number"],
+      paymentEwallet: json["payment_ewallet"],
+      grossAmount: json["gross_amount"]?.toString() ?? '0',
+      paymentProof: json["payment_proof"],
+      paymentDate: json["payment_date"] ?? '',
+      expiredAt: json["expired_at"] ?? '',
+      createdAt: json["created_at"] ?? '',
+      updatedAt: json["updated_at"] ?? '',
+      paymentQrUrl: json["payment_qr_url"],
+      paymentDeeplink: json["payment_deeplink"],
+      snapToken: json["snap_token"],
+      snapUrl: json["snap_url"]);
 
   Map<String, dynamic> toJson() => {
         "id": id,
@@ -272,9 +282,13 @@ class Payment {
         "payment_ewallet": paymentEwallet,
         "gross_amount": grossAmount,
         "payment_proof": paymentProof,
-        "payment_date": paymentDate.toIso8601String(),
-        "expired_at": expiredAt.toIso8601String(),
-        "created_at": createdAt.toIso8601String(),
-        "updated_at": updatedAt.toIso8601String(),
+        "payment_date": paymentDate,
+        "expired_at": expiredAt,
+        "created_at": createdAt,
+        "updated_at": updatedAt,
+        "payment_qr_url": paymentQrUrl,
+        "payment_deeplink": paymentDeeplink,
+        "snap_token": snapToken,
+        "snap_url": snapUrl
       };
 }
